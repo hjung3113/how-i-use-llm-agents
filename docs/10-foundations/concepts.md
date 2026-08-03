@@ -1,71 +1,94 @@
-# 핵심 개념 사전
+# 핵심 개념의 정확한 경계
 
-이 문서는 정확한 개념 경계가 필요한 독자를 위한 reference다. 처음 접하는 용어라면 먼저 [쉬운 용어집](../00-start-here/glossary.md)을 읽는다.
+이 문서는 [쉬운 용어집](../00-start-here/glossary.md)의 정의를 반복하지 않고, 실제 workflow를 설계할 때 지켜야 할 경계와 불변 조건을 정리한다.
 
-## Authority
+## 정보 권위
 
-충돌이 생겼을 때 어떤 정보가 우선하는지를 뜻한다. 사용자의 현재 요청, 제품 설계, ADR, Issue, 코드, 테스트, 과거 memory를 같은 무게로 취급하지 않는다.
+| 질문 | 권위 | 다른 자료가 대신할 수 없는 것 |
+|---|---|---|
+| 사용자가 지금 무엇을 원하는가? | 현재 요청과 기록된 Material Decision | 과거 memory가 새 요청을 덮어쓸 수 없다. |
+| 제품이 무엇을 보장하는가? | product design, architecture, ADR | plan과 Issue가 영구 제품 계약을 만들지 않는다. |
+| 이번에 무엇을 배달하는가? | Issue와 accepted contract | roadmap 전체가 한 Task의 scope가 아니다. |
+| 지금 실제 상태가 무엇인가? | Git, runtime, test, PR, CI의 live evidence | handoff와 memory는 현재 상태 증명이 아니다. |
+| 에이전트가 어떻게 행동하는가? | 적용 범위의 rule과 authority envelope | tool capability가 곧 permission은 아니다. |
 
-## Contract
+## 요청에서 실행까지
 
-에이전트가 해야 할 일과 하지 말아야 할 일을 함께 정의한 작업 계약이다. 목표, 입력, 허용 범위, 금지 사항, 완료 조건, 보고 형식을 포함한다.
+```text
+Request
+  → Contract
+  → Acceptance criteria
+  → Task
+  → immutable Packet
+  → one or more Attempts
+```
 
-## Acceptance criteria
+- Contract는 목표와 경계를 정의한다.
+- Acceptance criteria는 관찰 가능한 성공 상태다.
+- Task는 scheduling과 ownership 단위다.
+- Packet은 한 Task의 실행 입력이며 실행 중 조용히 넓어지지 않는다.
+- Attempt는 실제 runtime 실행이다. Attempt failure가 곧 Task completion은 아니다.
 
-구현 방법이 아니라 완료 후 관찰할 수 있어야 하는 조건이다. 각 criterion은 테스트, UI 관찰, artifact 같은 증거와 연결한다.
+## 결과와 검증
 
-## Artifact
+```text
+Worker Result proposal
+  → exact Output Snapshot
+  → independent Review
+  → Finding and focused Repair | Verified Result
+  → separately authorized Application
+```
 
-채팅 밖에 남아 다른 에이전트가 검사할 수 있는 결과물이다. 코드 diff, 계획, 테스트 결과, 스크린샷, review report, receipt 등이 해당한다.
+불변 조건:
 
-## Evidence
+- worker의 self-report는 verification이 아니다.
+- verifier는 worker와 다른 identity와 session을 사용한다.
+- verdict는 exact snapshot에 묶인다.
+- 검증 후 output이 바뀌면 이전 verdict는 무효다.
+- finding은 지우지 않고 successor repair가 해결한다.
+- Verified Result는 자동으로 merge·deploy된 Applied Result가 아니다.
 
-주장을 검증할 수 있게 하는 구체적인 근거다. “테스트 통과”라는 문장보다 실행한 명령, 결과, 대상 commit을 함께 남긴다.
+## Artifact, Evidence, Provenance, Receipt
 
-## Gate
+| 개념 | 정확한 역할 |
+|---|---|
+| Artifact | 저장하고 참조할 수 있는 결과 단위 |
+| Evidence | 한 claim이나 verdict를 지지하는 provenance-linked 정보 |
+| Provenance | 입력·revision·actor·Attempt·환경의 연결 정보 |
+| Receipt | 요청부터 결정·작업·검증·limitation·terminal outcome을 연결한 완료 artifact |
 
-다음 단계로 이동하기 전에 만족해야 하는 조건이다. 구현 gate, 독립 review gate, CI gate, merge gate를 분리한다.
+모든 Artifact가 Evidence는 아니다. Evidence가 있어도 그것이 지지하지 않는 claim까지 확장할 수 없다. Receipt는 새로운 검증이 아니라 이미 검증된 연결을 terminal outcome으로 기록한다.
 
-## Lane
+## Workflow, Harness, Orchestrator
 
-한 에이전트가 소유하는 격리된 작업 흐름이다. 명확한 Issue, branch/worktree, 허용 경로, 검증, 종료 상태를 가진다.
+- Workflow는 한 종류의 일이 흐르는 순서와 exit condition이다.
+- Harness는 workflow를 실행하는 역할, tool, authority, state, gate의 배치다.
+- Orchestrator는 현재 state와 evidence에서 다음 workflow와 Task를 선택하고 terminal outcome까지 운영한다.
 
-## DAG
+오케스트레이터가 모델의 proposal을 받더라도 Decision Authority와 외부 publication authority를 스스로 만들 수 없다.
 
-작업의 선행 관계와 병렬 가능성을 나타내는 방향성 비순환 그래프다. “에이전트를 많이 실행하는 것”이 아니라 안전하게 동시에 진행할 수 있는 작업을 찾는 도구다.
+## DAG, Lane, Worktree
 
-## Independent review
+- DAG edge는 실제 dependency를 나타낸다.
+- Lane은 한 Issue와 write ownership을 가진 작업 흐름이다.
+- Worktree는 lane을 파일시스템에서 격리하는 수단이다.
 
-구현자의 설명이나 자기평가에 의존하지 않고 요구사항, 권위 문서, 실제 diff, 테스트 증거를 별도 역할이 검토하는 과정이다.
+worktree가 다르다고 semantic conflict가 사라지는 것은 아니다. overlapping write와 공유 contract는 merge 전 다시 검증한다.
 
-## Focused repair
+## Handoff와 Memory
 
-리뷰 실패 후 전체 구현을 다시 수행하지 않고, 구체적인 finding을 새로운 좁은 작업 계약으로 바꾸어 수정하는 방식이다.
+- Handoff는 현재 작업의 재개 index이며 live state를 다시 확인해야 한다.
+- Memory는 반복 가치가 있는 검증된 장기 교훈이며 현재 Task queue가 아니다.
 
-## Fail closed
+둘 다 private chat history를 authoritative workflow state로 만드는 대안이 아니다. 권위 있는 상태는 Git, Issue, runtime, artifact에서 재구성할 수 있어야 한다.
 
-증거가 부족하거나 identity가 바뀐 경우 성공으로 추정하지 않고 중단하거나 실패 상태를 반환하는 원칙이다.
+## Gate와 Fail closed
 
-## Provenance
+Gate는 다음 단계에 필요한 evidence를 정의한다. evidence가 없거나 identity가 달라지면 성공으로 추정하지 않는다.
 
-결과가 어떤 입력, 코드 버전, 환경, attempt에서 만들어졌는지 추적할 수 있는 정보다.
-
-## Receipt
-
-한 작업이 어떤 검증을 거쳐 어떤 terminal state에 도달했는지 기록하는 완료 artifact다. 단순한 “done” 메시지보다 강한 완료 증거다.
-
-## Handoff
-
-현재 실행 상태를 다음 세션이나 에이전트에 전달하는 snapshot이다. 권위 있는 현재 상태가 아니라 재개를 위한 색인이다.
-
-## Memory
-
-여러 세션에 걸쳐 재사용할 검증된 교훈이다. 현재 상태 저장소가 아니며, 변할 수 있는 사실은 재확인해야 한다.
-
-## Black-box mission
-
-내부 구현이나 정답 경로를 알려주지 않고 사용자 역할, 목표, 성공 outcome만 제공하는 검증 과제다.
-
-## Model routing
-
-모든 작업에 가장 강한 모델을 쓰는 대신 탐색, 구현, 설계 판단, 독립 리뷰처럼 역할과 위험도에 따라 모델을 선택하는 방식이다.
+```text
+missing evidence → unverified or blocked
+snapshot drift   → reverify
+authority gap    → focused decision request
+repeated failure → typed block, not infinite retry
+```

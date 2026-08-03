@@ -15,7 +15,8 @@
 
 | 나의 상황 | 권장 시작점 | 얻는 결과 |
 |---|---|---|
-| Claude Code가 처음이다 | [15분 Quickstart](docs/00-start-here/quickstart.md) | 읽기 → 작은 수정 → 검증의 첫 성공 |
+| Claude Code가 처음이다 | [기본 정신모델](docs/00-start-here/mental-model.md) | 먼저 이 방식의 이유와 안전 경계 이해 |
+| 설명을 이해했고 직접 해보고 싶다 | [15분 Quickstart](docs/00-start-here/quickstart.md) | 읽기 → 작은 수정 → 검증의 첫 성공 |
 | 몇 번 썼지만 결과가 들쭉날쭉하다 | [기본 정신모델](docs/00-start-here/mental-model.md) | 긴 prompt 대신 지속되는 작업 계약 |
 | 팀 규칙을 만들고 있다 | [팀 도입 가이드](docs/00-start-here/team-adoption.md) | 회사 정책과 개인 workflow의 분리 |
 | 여러 agent를 운영하고 싶다 | [하네스 패턴](docs/20-workflows/harness-patterns.md) | 위험도에 맞는 역할과 gate 선택 |
@@ -119,10 +120,11 @@ project/
 
 ### 첫날
 
-1. [15분 Quickstart](docs/00-start-here/quickstart.md)
+1. README의 [핵심 이야기](#이-자료를-이해하는-핵심-이야기)
 2. [기본 정신모델](docs/00-start-here/mental-model.md)
 3. [쉬운 용어집](docs/00-start-here/glossary.md)
-4. [복사 가능한 project operating system](examples/project-operating-system/README.md)
+4. [선택: 15분 Quickstart](docs/00-start-here/quickstart.md)
+5. [선택: project operating system 예시](examples/project-operating-system/README.md)
 
 ### 첫 주
 
