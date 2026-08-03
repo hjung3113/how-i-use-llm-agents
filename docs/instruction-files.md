@@ -38,7 +38,7 @@ flowchart TD
 - 수정 가능 영역과 모듈 경계
 - 테스트 및 검증 규칙
 - 사용자 변경과 비밀정보 보호
-- commit, push, merge 같은 외부 변경의 승인 경계
+- 로컬 commit과 push, PR, merge 같은 원격 변경의 서로 다른 승인 경계
 
 피할 내용:
 
