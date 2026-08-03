@@ -41,4 +41,3 @@
 4. [현재 Issue acceptance criteria]
 
 구현 로드맵과 과거 계획은 제품 동작의 권위가 아니다.
-

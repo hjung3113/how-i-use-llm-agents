@@ -151,6 +151,8 @@ Task packet
 
 종료 조건: 결과가 검증 가능한 provenance와 terminal receipt를 가진다.
 
+이 수준의 ceremony는 같은 작업을 여러 번 자동 실행하거나 잘못된 결과 공개 비용이 큰 경우에만 사용한다. 최소 JSON 예시와 실제 흐름은 [end-to-end 예시](example-end-to-end.md)에 있다.
+
 ## 흔한 실패
 
 - 작은 작업에도 에이전트를 과도하게 늘린다.
@@ -161,4 +163,3 @@ Task packet
 - 테스트 통과를 사용자 outcome 통과로 착각한다.
 - merge 후 공유 검증을 다시 실행하지 않는다.
 - 상태와 증거를 채팅 안에만 남긴다.
-

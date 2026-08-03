@@ -107,4 +107,3 @@ new milestone → discuss phase → plan phase
 6. 설치와 컨텍스트 비용보다 얻는 신뢰성이 큰가?
 
 도구가 많아질수록 같은 책임을 가진 command와 skill이 중복되기 쉽다. 프로젝트마다 하나의 기본 경로를 정하고 예외적으로만 다른 도구를 사용한다.
-
