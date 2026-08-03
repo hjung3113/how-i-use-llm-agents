@@ -4,6 +4,17 @@
 
 이 문서는 내가 Codex와 Claude 같은 LLM 에이전트를 실제 소프트웨어 작업에 사용하는 방식을 설명하는 초안이다. 핵심은 더 화려한 프롬프트가 아니다. **작업의 권위, 범위, 역할, 검증, 완료 조건을 구조화하는 것**이다.
 
+## 문서 지도
+
+- [공통 운영 파일](docs/instruction-files.md): `AGENTS.md`, `CLAUDE.md`, `CONTEXT.md`, memory, handoff
+- [워크플로우 패턴](docs/workflow-patterns.md): 자주 반복하는 실제 작업 순서
+- [하네스 패턴](docs/harness-patterns.md): 작업 위험도에 따른 실행 구조
+- [스킬과 플러그인](docs/toolbox.md): 자주 쓰는 오픈소스 도구와 선택 기준
+- [핵심 개념](docs/concepts.md): authority, artifact, gate, lane, receipt 등
+- [복사 가능한 운영 파일](examples/project-operating-system/AGENTS.md)
+- [작업 계약 템플릿](templates/agent-contracts.md)
+- [리뷰 기준](docs/review-criteria.md)
+
 ## 한눈에 보기
 
 ```mermaid
@@ -164,6 +175,36 @@ HANDOFF를 읽고 현재 Git, 테스트, PR, 이슈 상태를 다시 확인해.
 
 더 구체적인 복사·수정용 양식은 [templates/agent-contracts.md](templates/agent-contracts.md)에 정리했다.
 
+## 바로 가져다 쓸 수 있는 운영 파일
+
+도구마다 같은 규칙을 중복 작성하지 않고 역할을 나눈다.
+
+| 파일 | 담는 내용 | 담지 않는 내용 |
+|---|---|---|
+| `AGENTS.md` | 모든 에이전트가 지킬 작업 규칙 | 프로젝트 역사와 세션 로그 |
+| `CLAUDE.md` | Claude 전용 진입점과 도구 차이 | `AGENTS.md` 규칙의 복사본 |
+| `CONTEXT.md` | 제품 목적, 도메인, 설계 권위 | 현재 branch나 일회성 작업 상태 |
+| `MEMORY.md` | 반복 사용 가치가 있는 검증된 교훈 | 비밀값, 원문 대화, 변하기 쉬운 상태 |
+| `HANDOFF.md` | 지금 진행 중인 작업과 재개 지점 | 영구적인 제품 설계 |
+
+설계 원칙과 로딩 순서는 [docs/instruction-files.md](docs/instruction-files.md)에, 복사 가능한 최소 예시는 [examples/project-operating-system](examples/project-operating-system)에 있다.
+
+## 하네스 선택
+
+모든 작업에 다중 에이전트가 필요한 것은 아니다. 변경 위험과 병렬성에 따라 가장 작은 하네스를 선택한다.
+
+| 상황 | 권장 하네스 |
+|---|---|
+| 질문, 작은 문서 수정 | 단일 에이전트 |
+| 명확한 작은 기능 | 계획–실행–검증 |
+| 중요한 코드 변경 | 구현자–독립 리뷰어 |
+| 서로 충돌하지 않는 여러 이슈 | worktree DAG |
+| 제품 UI와 사용자 여정 | 블랙박스 하네스 |
+| 중요한 설계 결정 | 다중 관점 의사결정 |
+| 반복 배달과 운영 자동화 | 증거 기반 CI 하네스 |
+
+각 형태의 구조, 장단점, 종료 조건은 [docs/harness-patterns.md](docs/harness-patterns.md)에 정리했다.
+
 ## 최종 요약
 
 나는 LLM을 “정답을 말하는 존재”로 사용하지 않는다. 대신 다음 조건을 갖춘 작업자로 사용한다.
@@ -180,4 +221,3 @@ HANDOFF를 읽고 현재 Git, 테스트, PR, 이슈 상태를 다시 확인해.
 ## 문서 상태
 
 초안이다. 실제 사례, 스크린샷, 도구별 설정 예시는 개인 정보와 프로젝트 정보를 제거한 뒤 추가할 예정이다.
-
