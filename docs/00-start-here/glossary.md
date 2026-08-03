@@ -1,0 +1,199 @@
+# Claude Code와 agent workflow 쉬운 용어집
+
+이 문서는 정확한 기술 사전보다 “동료에게 한 문장으로 어떻게 설명할까?”에 초점을 둔다. 더 엄밀한 개념 경계는 [핵심 개념 사전](../10-foundations/concepts.md)을 참고한다.
+
+## 먼저 알아야 할 10개
+
+### Agent
+
+**쉬운 뜻:** 답만 말하는 대신 파일을 읽고 수정하고 명령을 실행하며 목표를 향해 여러 단계를 수행하는 AI 작업자.
+
+**왜 필요한가:** 코딩 작업은 한 번의 답변보다 탐색·수정·검증의 연속이기 때문이다.
+
+### Claude Code
+
+**쉬운 뜻:** Claude가 terminal에서 프로젝트 파일과 개발 도구를 사용하도록 만든 agent 환경.
+
+**헷갈리지 말 것:** 일반 Claude 채팅과 달리 실제 파일과 명령에 영향을 줄 수 있으므로 권한과 diff 확인이 중요하다.
+
+### Context
+
+**쉬운 뜻:** agent가 현재 판단에 사용하는 요청, 코드, 문서, 상태, 과거 교훈.
+
+**왜 필요한가:** 모델 능력보다 잘못되거나 오래된 context가 결과를 망치는 경우가 많다.
+
+### Rule file
+
+**쉬운 뜻:** 매번 prompt로 반복하지 않도록 프로젝트의 작업 규칙을 적은 파일. 이 자료에서는 `CLAUDE.md`와 `AGENTS.md`를 사용한다.
+
+**헷갈리지 말 것:** 제품 설계나 현재 작업 로그를 모두 넣는 장소가 아니다.
+
+### Workflow
+
+**쉬운 뜻:** 한 종류의 작업이 시작에서 종료까지 흐르는 순서. 예: 진단 → 원인 확인 → 수정 → 회귀 test.
+
+### Harness
+
+**쉬운 뜻:** workflow를 실행하도록 역할, 도구, 권한, 상태, 검증 gate를 배치한 바깥 구조.
+
+**Workflow와 차이:** workflow가 “일의 순서”라면 harness는 “누가 어떤 도구와 규칙으로 그 순서를 실행하는가”다.
+
+### Evidence
+
+**쉬운 뜻:** “됐습니다”라는 주장을 확인할 수 있는 diff, test 결과, review, 실제 화면 같은 근거.
+
+### Independent review
+
+**쉬운 뜻:** 구현한 agent와 다른 역할이 요구사항과 실제 결과를 다시 확인하는 것.
+
+**왜 필요한가:** 구현자는 자신의 전제와 누락을 그대로 자기검증에 가져오기 쉽다.
+
+### Orchestrator
+
+**쉬운 뜻:** 여러 작업자 사이에서 다음 일, 필요한 context, 상태, 검증, repair를 선택하는 운영자.
+
+**헷갈리지 말 것:** agent를 많이 호출하는 도구가 아니라 evidence를 보고 terminal outcome까지 운영하는 역할이다.
+
+### Material Decision
+
+**쉬운 뜻:** agent가 알아서 정하면 안 되고 사람이 결정해야 하는 중요한 선택.
+
+예: 제품 목표·범위·사용자 계약의 변화, 오래 유지되는 구조, 되돌리기 어려운 외부 효과.
+
+**반대 예:** formatting, 이미 정해진 범위 안의 local reversible 구현 선택.
+
+## 작업 계약과 실행
+
+### Contract
+
+목표, 범위, 금지 사항, 완료 조건, 보고 형식을 함께 적은 작업 약속.
+
+### Acceptance criteria
+
+완료 후 관찰할 수 있어야 하는 조건. 구현 방법보다 성공 상태를 설명한다.
+
+### Task
+
+한 agent 또는 한 workflow가 소유할 수 있을 정도로 좁혀진 작업 단위.
+
+### Packet
+
+한 Task를 실행하는 데 필요한 목표, 입력, 허용 범위, 권한, 검증을 묶은 변경되지 않는 실행 계약.
+
+### Attempt
+
+한 Task를 실제로 한 번 실행한 것. Attempt가 실패해도 Task가 끝난 것은 아닐 수 있다.
+
+### Worker
+
+구현이나 조사를 수행하고 결과를 제안하는 역할.
+
+### Verifier
+
+worker와 분리되어 exact result와 evidence를 검토하는 역할.
+
+### Finding
+
+review에서 발견한 구체적이고 다시 참조할 수 있는 결함.
+
+### Focused repair
+
+전체 작업을 처음부터 다시 하지 않고 하나의 finding만 해결하는 좁은 후속 작업.
+
+### Replan
+
+새 evidence나 finding 때문에 dependency와 다음 Task를 다시 계산하는 것.
+
+## 병렬 작업
+
+### DAG
+
+어떤 Task가 먼저 끝나야 하고 무엇을 동시에 할 수 있는지 나타낸 dependency graph.
+
+### Lane
+
+하나의 Issue, branch/worktree, 허용 범위, 검증을 가진 격리된 작업 흐름.
+
+### Worktree
+
+같은 Git 저장소의 여러 branch를 별도 폴더에서 동시에 작업하게 하는 Git 기능.
+
+**왜 필요한가:** 병렬 agent가 같은 working tree를 덮어쓰지 않게 한다.
+
+## 기록과 완료
+
+### Artifact
+
+다른 agent나 사람이 나중에 검사할 수 있도록 채팅 밖에 남긴 결과물. 계획, result, review, screenshot 등이 있다.
+
+### Provenance
+
+결과가 어떤 입력, revision, 환경, Attempt에서 나왔는지 추적하는 정보.
+
+### Receipt
+
+어떤 요청이 어떤 작업과 검증을 거쳐 어떤 상태에 도달했는지 연결한 완료 기록.
+
+**헷갈리지 말 것:** agent의 “done” 메시지와 다르다.
+
+### Handoff
+
+다른 세션이 작업을 이어받도록 현재 상태와 다음 행동을 기록한 snapshot.
+
+### Memory
+
+여러 세션에서 다시 쓸 가치가 있는 검증된 교훈.
+
+**Handoff와 차이:** handoff는 빠르게 변하는 현재 작업, memory는 오래 유지되는 교훈이다.
+
+### Verified Result
+
+독립 검증을 통과하고 exact 위치와 limitation을 확인할 수 있는 결과.
+
+### Applied Result
+
+검증된 결과가 실제 사용자 branch, PR, 배포 대상 같은 지정 위치에 반영된 상태.
+
+**왜 구분하는가:** 검증됐다는 사실이 자동으로 merge나 deploy까지 됐다는 뜻은 아니기 때문이다.
+
+## 도구 확장
+
+### Skill
+
+debugging, planning, review처럼 반복 작업 방법을 재사용 가능한 지침으로 만든 것.
+
+### Plugin
+
+여러 skill, command, hook, agent, connector를 함께 설치하는 묶음.
+
+### MCP
+
+AI가 GitHub, 문서, 데이터베이스 같은 외부 시스템의 context와 도구를 구조적으로 사용하는 연결 표준.
+
+### Hook
+
+도구 실행 전후에 검사, formatting, 알림 같은 기계적 규칙을 자동 실행하는 장치.
+
+### Model routing
+
+탐색, 구현, 설계 판단, 독립 review의 난이도와 실패 비용에 따라 서로 다른 모델을 선택하는 것.
+
+## 프로젝트 상태
+
+### Greenfield
+
+아직 기존 코드와 사용자 변경이 거의 없는 새 프로젝트.
+
+### Brownfield
+
+기존 코드, 규칙, 사용자 변경, 운영 제약이 이미 있는 프로젝트.
+
+**왜 중요한가:** brownfield에서는 새 코드를 만드는 능력보다 현재 상태를 보존하고 기존 권위를 찾는 능력이 더 중요할 수 있다.
+
+### Black-box mission
+
+내부 구현 순서를 알려주지 않고 사용자 역할, 목표, 성공 outcome만 주는 검증 과제.
+
+### Fail closed
+
+증거가 부족하거나 상태가 달라졌을 때 성공으로 추정하지 않고 중단·실패·미검증 상태로 남기는 원칙.

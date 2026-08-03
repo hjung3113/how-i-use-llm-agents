@@ -19,6 +19,7 @@
 | 몇 번 썼지만 결과가 들쭉날쭉하다 | [기본 정신모델](docs/00-start-here/mental-model.md) | 긴 prompt 대신 지속되는 작업 계약 |
 | 팀 규칙을 만들고 있다 | [팀 도입 가이드](docs/00-start-here/team-adoption.md) | 회사 정책과 개인 workflow의 분리 |
 | 여러 agent를 운영하고 싶다 | [하네스 패턴](docs/20-workflows/harness-patterns.md) | 위험도에 맞는 역할과 gate 선택 |
+| 낯선 용어가 많다 | [쉬운 용어집](docs/00-start-here/glossary.md) | agent workflow의 공통 언어 |
 
 ## 2분 요약
 
@@ -41,6 +42,21 @@ flowchart LR
 ```
 
 변경 위험이 커질 때만 계획, 독립 review, worktree lane, evidence automation을 차례로 추가한다. 복잡한 하네스는 그것이 막는 실제 실패가 있을 때만 사용한다.
+
+## 이 자료를 이해하는 핵심 이야기
+
+처음에는 Claude Code에 한 작업을 직접 부탁한다. 반복하다 보면 매번 같은 설명과 검증을 사람이 다시 해야 한다. 그래서 규칙과 제품 맥락을 파일에 남기고, 중요한 결과는 다른 역할이 검증하게 한다. 작업이 여러 개가 되면 오케스트레이터가 context 전달·task 선택·상태 확인·repair를 맡아 사람이 하던 운영 노동을 줄인다.
+
+즉, 발전 방향은 “더 긴 prompt”가 아니다.
+
+```text
+개인 대화에 의존
+  → 프로젝트가 규칙을 기억
+    → 결과를 독립적으로 검증
+      → 오케스트레이터가 반복 운영을 담당
+```
+
+이 이야기를 이해한 뒤 필요한 예시와 템플릿만 선택해 적용하면 된다.
 
 ## 내가 매번 지키는 다섯 가지
 
@@ -105,7 +121,8 @@ project/
 
 1. [15분 Quickstart](docs/00-start-here/quickstart.md)
 2. [기본 정신모델](docs/00-start-here/mental-model.md)
-3. [복사 가능한 project operating system](examples/project-operating-system/README.md)
+3. [쉬운 용어집](docs/00-start-here/glossary.md)
+4. [복사 가능한 project operating system](examples/project-operating-system/README.md)
 
 ### 첫 주
 
