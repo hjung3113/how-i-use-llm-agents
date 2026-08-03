@@ -11,7 +11,7 @@
 
 ## 3–6분: 최소 운영 파일 추가
 
-루트에 다음 `CLAUDE.md`를 둔다.
+Claude Code만 쓴다면 루트에 다음 `CLAUDE.md` 하나를 둔다.
 
 ```markdown
 # CLAUDE.md
@@ -23,7 +23,17 @@ commit, push, PR, merge는 명시적으로 요청된 단계만 수행한다.
 검증하지 못한 부분을 완료라고 표현하지 않는다.
 ```
 
-팀이 Codex 등 여러 agent를 함께 쓴다면 공통 규칙을 `AGENTS.md`에 두고 `CLAUDE.md`는 그 파일을 먼저 읽도록 안내한다. 전체 예시는 [project operating system](../../examples/project-operating-system/AGENTS.md)에 있다.
+Codex 등 여러 agent가 같은 규칙을 공유한다면 위 공통 규칙을 `AGENTS.md`로 옮기고 `CLAUDE.md`를 다음처럼 줄인다.
+
+```markdown
+# CLAUDE.md
+
+작업 전에 루트 AGENTS.md를 읽고 따른다.
+CONTEXT.md가 있으면 제품 목적과 권위 문서를 확인한다.
+재개 작업이고 HANDOFF.md가 있으면 읽은 뒤 현재 Git 상태를 다시 검증한다.
+```
+
+이것이 15분 과정의 명시적인 두 파일 variant다. 전체 예시와 각 optional 파일의 생성 시점은 [project operating system](../../examples/project-operating-system/README.md)에 있다.
 
 ## 6–9분: 읽기 전용 탐색
 

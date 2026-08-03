@@ -150,7 +150,7 @@ resume은 private chat history를 추측하지 않고 durable state와 immutable
 |---|---|---|
 | Decision Authority | 목적과 material direction 결정 | 사람 또는 이미 승인된 policy |
 | Execution Authority | 한 Task가 수행할 수 있는 행동 | 요청·policy·packet·runtime capability의 교집합 |
-| Publication Authority | authoritative state와 artifact 확정 | 검증 규칙을 집행하는 coordinator/kernel |
+| Result Finalization Authority | 내부 authoritative run state와 artifact 확정 | 검증 규칙을 집행하는 coordinator/kernel |
 
 하위 layer는 authority를 좁히거나 확장을 요청할 수 있지만 조용히 넓힐 수 없다.
 
@@ -170,7 +170,7 @@ coordinator agent가 task list, status, finding, next action을 파일에 기록
 
 ### Level 4: deterministic admission
 
-schema, capability, state transition, actor separation, snapshot identity, publication을 deterministic kernel이 검사한다. 모델은 proposal만 만든다.
+schema, capability, state transition, actor separation, snapshot identity, 내부 result 확정을 deterministic kernel이 검사한다. 모델은 proposal만 만든다.
 
 각 Level은 앞 단계의 실패 비용과 반복량이 다음 단계의 구축 비용을 정당화할 때만 올라간다.
 

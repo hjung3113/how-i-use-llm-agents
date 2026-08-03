@@ -2,6 +2,17 @@
 
 로컬에 보존된 Codex 로그 2,514개와 Claude 프로젝트 로그 1,033개, Claude prompt history 6,959건을 다시 분석해 기존 workflow 문서에 직접 드러나지 않았던 반복 습관을 정리했다. 기록 범위는 2026년 3월부터 8월까지이며 자동 생성된 subagent 세션과 중복 worktree가 포함된다. 따라서 이것을 독립 대화 수나 생산성 지표로 해석하지 않고, **여러 프로젝트에서 반복적으로 나타난 행동**만 채택했다.
 
+## 분석 방법과 privacy
+
+1. session metadata에서 기간, 프로젝트, tool·skill 호출을 집계했다.
+2. system prompt가 섞이지 않은 사용자 메시지와 Claude prompt history에서 반복 주제를 분류했다.
+3. 중복 worktree와 자동 subagent 때문에 단순 횟수는 순위 근거로 사용하지 않았다.
+4. 여러 독립 프로젝트와 Codex·Claude 양쪽에서 반복된 패턴만 후보로 남겼다.
+5. memory summary와 대표 저장소의 live 문서 구조로 의미를 교차 확인했다.
+6. raw prompt, 개인 경로, private 저장소명, credential은 이 문서에 포함하지 않았다.
+
+이 분석은 보존된 로컬 기록의 snapshot이며 모든 과거 활동을 완전하게 대표한다고 주장하지 않는다.
+
 ## 1. 세션 위생을 작업의 일부로 본다
 
 반복적으로 사용한 동작:
