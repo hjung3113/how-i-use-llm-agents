@@ -50,7 +50,7 @@ flowchart LR
 4. local commit과 push·PR·merge·deploy의 승인을 각각 구분한다.
 5. 실행한 검증, 실행하지 못한 검증, 남은 위험을 따로 보고하게 한다.
 
-실제 prompt와 확인 순서는 [Quickstart](docs/00-start-here/quickstart.md), 증거별 한계는 [End-to-end 예시](docs/20-workflows/example-end-to-end.md)에서 볼 수 있다.
+실제 prompt와 확인 순서는 [Quickstart](docs/00-start-here/quickstart.md), 증거별 범위와 한계는 [검증 증거 선택](docs/10-foundations/evidence.md), 전체 흐름은 [End-to-end 예시](docs/20-workflows/example-end-to-end.md)에서 볼 수 있다.
 
 ## 초급 → 중급 → 고급
 
