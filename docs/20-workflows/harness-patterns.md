@@ -13,6 +13,7 @@
 | 5. 블랙박스 사용자 | 2+ | UI, API, 사용자 여정 | 관찰 가능한 outcome |
 | 6. 다중 관점 결정 | 3+ | 제품·설계의 큰 결정 | 근거 있는 decision record |
 | 7. CI·증거 하네스 | 가변 | 반복 배달과 자동 운영 | immutable evidence와 receipt |
+| 8. Operator orchestrator | 가변 | 사람이 routing을 지속하기 어려운 장기·다중 작업 | state, decision request, receipt |
 
 ## 1. 단일 에이전트
 
@@ -163,3 +164,29 @@ Task packet
 - 테스트 통과를 사용자 outcome 통과로 착각한다.
 - merge 후 공유 검증을 다시 실행하지 않는다.
 - 상태와 증거를 채팅 안에만 남긴다.
+
+## 8. Operator orchestrator
+
+사람이 매 단계의 agent, phase, prompt, 재시도를 선택하지 않아도 한 요청을 terminal outcome까지 운영한다.
+
+```text
+human request
+  → request contract
+  → context/workflow/skill selection
+  → admitted task graph
+  → worker artifacts
+  → independent verification
+  → repair | replan | material decision | typed block | receipt
+```
+
+필요한 조건:
+
+- durable run state와 artifact
+- Task와 runtime Attempt의 구분
+- worker와 verifier identity 분리
+- dependency와 write conflict를 아는 scheduler
+- routine choice와 Material Decision의 구분
+- retry budget, cancellation reconciliation, typed block
+- agent의 성공 선언이 아닌 receipt 기반 completion
+
+이 구조는 여러 agent를 부르는 것보다 상태·권위·종료 semantics가 중요하다. 구체적인 역할과 도입 단계는 [orchestrator as operator](orchestrator-as-operator.md)를 따른다.

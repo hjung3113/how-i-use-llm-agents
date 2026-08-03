@@ -1,210 +1,242 @@
-# 나는 LLM 에이전트를 이렇게 쓴다
+# 나는 Claude Code와 LLM 에이전트를 이렇게 쓴다
 
-> 코드를 대신 써주는 챗봇에서, 검증 가능한 작은 개발 조직으로.
+> “코드를 대신 써주는 챗봇”에서 “검증 가능한 개발 동료”로 넘어가는 실전 안내서
 
-이 문서는 내가 Codex와 Claude 같은 LLM 에이전트를 실제 소프트웨어 작업에 사용하는 방식을 설명하는 초안이다. 핵심은 더 화려한 프롬프트가 아니다. **작업의 권위, 범위, 역할, 검증, 완료 조건을 구조화하는 것**이다.
+이 저장소는 회사에 Claude Code가 도입됐지만 아직 익숙하지 않은 개발자와 기술 리더에게, 내가 실제 프로젝트에서 LLM 에이전트를 사용하는 방식을 소개한다.
 
-## 문서 지도
+목표는 명령어를 많이 외우거나 복잡한 멀티 에이전트 시스템을 만드는 것이 아니다. 다음 네 가지 습관을 익히는 것이다.
 
-- [공통 운영 파일](docs/instruction-files.md): `AGENTS.md`, `CLAUDE.md`, `CONTEXT.md`, memory, handoff
-- [워크플로우 패턴](docs/workflow-patterns.md): 자주 반복하는 실제 작업 순서
-- [하네스 패턴](docs/harness-patterns.md): 작업 위험도에 따른 실행 구조
-- [스킬과 플러그인](docs/toolbox.md): 자주 쓰는 오픈소스 도구와 선택 기준
-- [핵심 개념](docs/concepts.md): authority, artifact, gate, lane, receipt 등
-- [복사 가능한 운영 파일](examples/project-operating-system/AGENTS.md)
-- [작업 계약 템플릿](templates/agent-contracts.md)
-- [리뷰 기준](docs/review-criteria.md)
+1. 에이전트가 작업하기 전에 **현재 상태와 요구사항의 권위**를 확인한다.
+2. 무엇을 바꿀지뿐 아니라 **바꾸지 않을 범위와 완료 조건**도 준다.
+3. “완료했습니다”라는 답변 대신 **diff, test, review, 실제 동작**으로 확인한다.
+4. 중요한 작업은 **구현자와 검증자**를 분리하고 다음 세션이 이어받을 기록을 남긴다.
 
-## 한눈에 보기
+## 누구를 위한 문서인가
+
+### Claude Code를 처음 쓰는 개발자
+
+먼저 [15분 Quickstart](docs/00-start-here/quickstart.md)를 따른다. 자신의 저장소에 최소 규칙 파일을 추가하고, 읽기 전용 탐색 → 작은 수정 → 검증까지 한 번 경험한다.
+
+### 몇 번 사용했지만 결과가 들쭉날쭉한 개발자
+
+[기본 정신모델](docs/00-start-here/mental-model.md)과 [운영 파일](docs/10-foundations/instruction-files.md)을 읽는다. 긴 프롬프트보다 저장소에 지속되는 작업 계약을 만든다.
+
+### 팀 도입과 품질 기준을 설계하는 리더
+
+[팀 도입 가이드](docs/00-start-here/team-adoption.md), [하네스 패턴](docs/20-workflows/harness-patterns.md), [평가 계약](docs/90-evaluation/evaluation-rubric.md)을 읽는다. 모든 작업을 자동화하지 말고 위험도에 맞는 gate를 정한다.
+
+## 2분 요약
 
 ```mermaid
 flowchart LR
     A[사람의 목표] --> B[현재 상태 확인]
     B --> C[범위와 완료 조건]
     C --> D[구현]
-    D --> E[검증]
+    D --> E[검증 증거]
     E -->|실패| F[집중 수정]
     F --> E
-    E -->|통과| G[배달 또는 종료]
+    E -->|통과| G[승인된 단계까지 배달]
     G --> H[Handoff]
 ```
 
-내가 사용하는 기본 루프는 다음과 같다.
-
-1. 저장소와 실행 환경의 현재 상태를 먼저 확인한다.
-2. 제품 설계, 구현 계획, 현재 이슈를 구분한다.
-3. 필요한 경우 작업을 의존성과 충돌 가능성에 따라 나눈다.
-4. 구현자에게 좁은 범위와 완료 조건을 준다.
-5. 테스트 결과와 변경 diff를 증거로 남긴다.
-6. 중요한 변경은 별도의 리뷰어가 검토한다.
-7. 통과한 결과만 PR, CI, merge 단계로 보낸다.
-8. 다음 세션이 이어받을 수 있도록 상태를 기록한다.
-
-## 숙련도별 사용 방식
-
-### 1. 초보자: AI를 실행 가능한 페어 프로그래머로 사용한다
-
-처음에는 대화보다 **프로젝트 안에서 실제 행동하게 만드는 것**이 중요하다.
-
-- 관련 코드를 읽고 기능 구현하기
-- 오류 재현 후 원인 찾기
-- 테스트, 빌드, 린트 실행하기
-- 로컬 서버를 띄우고 동작 확인하기
-- 수정한 파일과 남은 문제 보고하기
-
-좋은 요청의 기본형:
+일상 작업의 기본값은 단일 에이전트다.
 
 ```text
-현재 상태와 관련 파일을 먼저 확인해줘.
-기존 사용자 변경은 보존하고, 이 기능에 필요한 범위만 수정해.
-수정 후 가장 관련 있는 테스트를 실행하고 결과와 남은 한계를 알려줘.
+현재 상태 확인 → 좁은 작업 계약 → 구현 → 관련 테스트 → diff 확인 → 보고
 ```
 
-이 단계의 완료 기준은 “AI가 됐다고 말함”이 아니라 **변경된 코드와 실행된 검증**이다.
-
-### 2. 중급자: 한 번의 작업을 닫힌 루프로 운영한다
-
-중급 단계에서는 구현만 맡기지 않는다.
+변경 위험이 커질 때만 단계를 추가한다.
 
 ```text
-상태 확인 → 계획 → 구현 → 테스트 → diff 검토
-→ 문서 갱신 → PR → handoff
+작은 수정
+  → 계획–실행–검증
+    → 구현자–독립 리뷰어
+      → 서로 독립적인 여러 worktree lane
+        → 증거 기반 자동화
 ```
 
-다음 파일들이 세션 사이의 공통 언어가 된다.
+복잡한 하네스를 먼저 만들지 않는다. 각 단계는 실제로 겪은 실패를 막을 때만 추가한다.
 
-- `AGENTS.md`: 저장소 안에서 지켜야 할 작업 규칙
-- `CONTEXT.md`: 제품과 도메인의 현재 맥락
-- ADR 또는 설계 문서: 중요한 결정과 불변 조건
-- GitHub Issue: 작업 범위와 acceptance criteria
-- `HANDOFF.md`: 현재 상태, 증거, 다음 작업
+## 내가 Claude Code를 시작하는 방식
 
-핵심은 한 세션의 긴 대화에 의존하지 않는 것이다. 새 에이전트도 파일과 Git 상태를 읽으면 같은 기준에서 일을 이어갈 수 있어야 한다.
+### 1. 바로 수정시키지 않고 먼저 읽게 한다
 
-### 3. 고급자: 여러 에이전트를 검증 가능한 조직으로 운영한다
+```text
+이 저장소의 AGENTS.md/CLAUDE.md와 관련 문서를 읽고,
+현재 branch, git status, 테스트 방법을 확인해.
+아직 파일은 수정하지 말고 이 작업에 영향을 주는 범위와 위험만 요약해.
+```
 
-고급 단계에서는 역할을 분리한다.
+### 2. 목표를 관찰 가능한 결과로 바꾼다
 
-| 역할 | 책임 | 하지 않는 일 |
+나쁜 요청:
+
+```text
+로그인 고쳐줘.
+```
+
+더 나은 요청:
+
+```text
+만료된 세션으로 보호 페이지에 접근하면 로그인 화면으로 이동하고,
+로그인 후 원래 페이지로 돌아와야 해.
+인증 모듈과 관련 테스트만 수정하고 다른 라우팅은 정리하지 마.
+수정 전 실패를 재현하고, 완료 후 실행한 검증과 남은 한계를 알려줘.
+```
+
+### 3. 변경과 외부 효과를 구분한다
+
+- 파일 읽기와 상태 확인: 일반적으로 안전한 탐색
+- 로컬 파일 수정: 요청한 구현 범위 안에서 수행
+- local commit: 명시적 요청 또는 팀의 승인된 자동화 계약이 있을 때
+- push, PR, merge, 배포, Issue 종료: 각각 승인된 범위 안에서 수행
+
+### 4. 결과보다 증거를 확인한다
+
+| 증거 | 주로 확인하는 것 | 이것만으로 모르는 것 |
 |---|---|---|
-| 코디네이터 | 상태 확인, 작업 분해, 의존성 관리 | 모든 코드를 직접 작성 |
-| 구현자 | 지정된 범위 구현과 집중 테스트 | 자신의 결과를 최종 승인 |
-| 리뷰어 | 요구사항과 diff를 독립 검토 | 무관한 리팩터링 제안 |
-| 제품 비평가 | 사용자 가치와 범위 검증 | 구현 세부사항 반복 |
-| 블랙박스 사용자 | 실제 UI에서 결과 확인 | 내부 API를 정답 경로로 사용 |
+| diff | 실제 변경 내용과 범위 | 런타임 동작 |
+| test | 작성된 사례에서의 동작 | 요구사항 전체와 사용자 가치 |
+| 독립 review | spec·diff의 누락과 위험 | 결함의 완전한 부재 |
+| CI | 깨끗한 자동 환경의 gate | 실제 운영 배포 |
+| black-box 검증 | 공개 인터페이스의 사용자 outcome | 모든 내부 불변 조건 |
 
-병렬화도 무조건 많이 실행하는 것이 아니다.
+## 초급 → 중급 → 고급
 
-```mermaid
-flowchart TD
-    A[열린 작업] --> B{선행 작업이 있는가?}
-    B -->|예| C[대기 또는 선행 작업]
-    B -->|아니오| D{같은 파일을 수정하는가?}
-    D -->|예| E[순차 lane]
-    D -->|아니오| F[격리 worktree에서 병렬 실행]
-    F --> G[각 lane 독립 리뷰]
-    G --> H[merge 순서대로 rebase와 재검증]
-```
+### 초급: 안전하게 한 작업을 끝낸다
 
-## 내가 중요하게 보는 원칙
+- 저장소를 설명하게 한다.
+- 작은 범위 하나만 수정시킨다.
+- 관련 test와 diff를 직접 확인한다.
+- commit이나 push는 별도로 요청한다.
 
-### 현재 상태가 과거 기록보다 우선한다
+다음 단계로 올라가는 기준: 반복 작업에서 매번 같은 규칙과 명령을 다시 설명하고 있다.
 
-Handoff와 메모리는 출발점이지 현재 사실의 증명이 아니다. 작업을 재개할 때는 branch, HEAD, diff, 테스트, PR, CI, 이슈 상태를 다시 확인한다.
+### 중급: 프로젝트가 작업 방식을 기억하게 한다
 
-### 제품 설계와 구현 순서를 분리한다
+- `AGENTS.md`에 공통 작업 규칙을 둔다.
+- `CLAUDE.md`는 Claude Code용 얇은 진입점으로 둔다.
+- `CONTEXT.md`에 제품 목적과 도메인 언어를 둔다.
+- Issue에 범위와 acceptance criteria를 둔다.
+- `HANDOFF.md`로 다음 세션의 재개 지점을 남긴다.
 
-- 제품 설계: 무엇을 왜 만들며 어떤 행동을 보장하는가
-- 아키텍처와 프로토콜: 구성 요소와 런타임 계약은 무엇인가
-- 구현 계획: 어떤 순서로 만들 것인가
-- 이슈: 지금 배달할 최소 단위는 무엇인가
+다음 단계로 올라가는 기준: 변경 위험이 커서 구현자의 자기검증만으로 부족하거나, 서로 독립적인 작업이 실제로 여러 개 있다.
 
-로드맵의 순서가 제품의 영구적인 진실로 둔갑하지 않게 한다.
+### 고급: 역할과 검증을 분리한다
 
-### 구현자와 검증자를 분리한다
+- 구현자와 read-only 리뷰어를 분리한다.
+- Issue의 의존성과 write conflict를 DAG로 만든다.
+- 독립적인 lane만 별도 worktree에서 병렬 실행한다.
+- 결과를 artifact와 receipt로 남겨 자동 검증한다.
+- 모델은 작업 역할과 실패 비용에 따라 선택한다.
 
-테스트가 통과해도 요구사항 누락, 잘못된 범위, 공개 증거 부족, 동시성 문제는 남을 수 있다. 중요한 변경은 독립 리뷰어가 이슈 목적과 실제 diff를 기준으로 판정한다.
+다시 단순하게 내려가는 기준: 역할 분리와 상태 관리 비용이 작업 실패 비용보다 크다.
 
-### 실패하면 전체를 다시 만들지 않는다
+## 오케스트레이터는 사람의 운영 노동을 대신한다
 
-리뷰 결과는 가능한 한 구체적인 finding으로 만든다. 구현자는 그 finding만 집중 수정하고 관련 검증을 다시 실행한다.
-
-### 완료 상태를 세분화한다
-
-다음은 서로 다른 상태다.
-
-- 구현 완료
-- 로컬 테스트 통과
-- 독립 리뷰 통과
-- CI 통과
-- PR merge 완료
-- 이슈 종료
-- 실제 사용자 대상 반영 완료
-
-## 실전 예시
-
-### 좁은 구현 요청
+내가 지향하는 고급 workflow에서 사람은 매 단계마다 agent를 고르고, prompt를 전달하고, 끝났는지 확인하고, 다음 agent를 호출하는 project manager 역할을 하지 않는다.
 
 ```text
-Issue의 목적과 acceptance criteria를 먼저 확인해.
-허용된 파일 범위 안에서만 구현하고 관련 없는 정리는 하지 마.
-가장 좁은 실패 테스트부터 추가한 뒤 구현해.
-완료 시 변경 파일, 테스트 결과, 남은 제한을 보고해.
+사람: 목표와 material decision
+  ↓
+오케스트레이터:
+  요청 해석 → context 조립 → workflow/skill 선택 → task graph
+  → dispatch → artifact 수집 → 독립 검증 → repair/replan → receipt
 ```
 
-### 독립 리뷰 요청
+오케스트레이터가 대신하는 것은 반복적인 routing과 상태 관리다. 사람에게 남기는 것은 제품 목적·범위·사용자 계약을 바꾸거나 되돌리기 어려운 외부 효과를 승인하는 결정이다. 모델의 confidence가 낮다는 이유만으로 모든 선택을 사람에게 돌려보내지 않는다.
+
+이 운영 모델과 단계별 도입 방법은 [오케스트레이터가 operator가 되는 방식](docs/20-workflows/orchestrator-as-operator.md)에 정리했다.
+
+## 프로젝트에 두는 문서
 
 ```text
-저장소를 수정하지 마.
-이슈의 목적과 지정된 diff만 검토해.
-구체적인 실패, 회귀, 범위 확장만 심각도순으로 보고해.
-문제가 없으면 ACCEPT, 수정이 필요하면 REVISE 또는 REJECT로 결론 내.
+project/
+├── AGENTS.md              모든 에이전트의 작업 규칙
+├── CLAUDE.md              Claude Code용 얇은 어댑터
+├── CONTEXT.md             제품 목적과 도메인 언어
+├── HANDOFF.md             현재 작업 snapshot, 필요할 때만
+├── MEMORY.md              검증된 장기 교훈, 필요할 때만
+└── docs/
+    ├── README.md          문서 지도와 권위
+    ├── product/           사용자, 문제, 범위, 비목표
+    ├── architecture/      시스템 경계와 런타임 계약
+    ├── adr/               되돌리기 어려운 결정
+    ├── plans/             구현 순서와 임시 계획
+    ├── research/          조사 근거와 불확실성
+    ├── reviews/           독립 검토 결과
+    ├── operations/        실행·배포·복구 절차
+    └── archive/           더 이상 권위가 아닌 역사 자료
 ```
 
-### 세션 재개 요청
+모든 프로젝트가 이 구조 전체를 필요로 하지는 않는다. 파일과 폴더는 실제 내용이 생길 때 만든다. 자세한 목적, 수명, 승격·보관 규칙은 [docs 구조 예시](docs/10-foundations/docs-structure.md)와 [복사 가능한 skeleton](examples/project-operating-system/docs/README.md)에 있다.
 
-```text
-HANDOFF를 읽고 현재 Git, 테스트, PR, 이슈 상태를 다시 확인해.
-완료된 작업을 재실행하지 말고, 남은 작업의 실제 의존성 DAG를 만들어.
-지금 병렬 실행 가능한 lane과 사용자 결정이 필요한 항목을 분리해.
-```
+## 자주 사용하는 워크플로우
 
-더 구체적인 복사·수정용 양식은 [templates/agent-contracts.md](templates/agent-contracts.md)에 정리했다.
+- [저장소 재개](docs/20-workflows/workflow-patterns.md#1-저장소-재개)
+- [기능 구현](docs/20-workflows/workflow-patterns.md#2-기능-구현)
+- [버그 진단과 수정](docs/20-workflows/workflow-patterns.md#3-버그-진단과-수정)
+- [설계 결정](docs/20-workflows/workflow-patterns.md#4-설계-결정)
+- [독립 리뷰와 focused repair](docs/20-workflows/workflow-patterns.md#5-독립-리뷰와-focused-repair)
+- [여러 Issue의 DAG 처리](docs/20-workflows/workflow-patterns.md#6-열린-issue-dag-처리)
+- [UI 블랙박스 검증](docs/20-workflows/workflow-patterns.md#7-ui-블랙박스-검증)
+- [GitHub 배달과 종료](docs/20-workflows/workflow-patterns.md#8-github-배달과-종료)
+- [세션 종료와 memory 승격](docs/20-workflows/workflow-patterns.md#9-세션-종료와-기억-승격)
+- [오케스트레이터 중심 실행](docs/20-workflows/orchestrator-as-operator.md)
 
-## 바로 가져다 쓸 수 있는 운영 파일
+실제 세션 전체를 다시 탐색해 발견한 세션 위생, phase 운영, plugin 진단, 모델 라우팅 같은 추가 습관은 [세션에서 발견한 공통 패턴](docs/20-workflows/session-derived-patterns.md)에 정리했다.
 
-`AGENTS.md`는 공통 규칙, `CLAUDE.md`는 도구 어댑터, `CONTEXT.md`는 제품·도메인, `MEMORY.md`는 검증된 장기 교훈, `HANDOFF.md`는 현재 실행 snapshot을 맡는다. 자세한 경계는 [공통 운영 파일](docs/instruction-files.md), 복사 가능한 최소 예시는 [project operating system](examples/project-operating-system/AGENTS.md)에 있다.
+## 도구는 이렇게 조합한다
 
-## 하네스 선택
+- Claude Code: 일상 탐색, 구현, 테스트, Git 작업
+- Codex: 구현, 분석, 독립 리뷰, 병렬 agent 작업
+- Superpowers: brainstorming, planning, TDD, debugging, subagent workflow
+- GSD: milestone과 phase가 있는 장기 프로젝트
+- Orca: 여러 agent와 worktree를 나란히 운영
+- Matt Pocock Skills: domain modeling, codebase design, grilling, review
+- context-mode: 긴 로그와 대규모 탐색의 컨텍스트 절약
+- Playwright/browser: 실제 UI와 사용자 여정 검증
 
-기본값은 단일 에이전트다. 변경 위험이 커지면 계획–실행–검증, 독립 리뷰 순서로만 강화하고, 실제 병렬 작업이 있을 때만 worktree DAG를 사용한다. 선택표와 종료 조건은 [하네스 패턴](docs/harness-patterns.md)에 정리했다.
+도구별 역할과 선택 기준은 [toolbox](docs/30-tooling/toolbox.md)에 있다. 핵심 workflow는 특정 모델이나 plugin이 없어도 파일, Git, test, review 계약으로 유지된다.
 
-## 검증 수단과 한계
+## 저장소 학습 경로
 
-| 수단 | 주로 증명하는 것 | 단독으로 증명하지 못하는 것 |
-|---|---|---|
-| 테스트 | 지정된 입력에서 구현이 예상대로 동작함 | 요구사항 전체, 실제 사용자 가치 |
-| 독립 리뷰 | spec·diff에서 발견 가능한 누락과 위험 | 실행 환경의 실제 동작, 결함의 부재 |
-| CI | 깨끗한 환경에서 자동 gate가 통과함 | 운영 배포, 미작성 테스트의 동작 |
-| 블랙박스 검증 | 공개 인터페이스에서 사용자 outcome이 가능함 | 내부 불변 조건과 모든 경계 사례 |
+### 첫날
 
-여러 증거를 결합해도 절대적인 무결함을 증명하지는 않는다. 작업 위험에 비례해 필요한 신뢰 수준을 정한다.
+1. [15분 Quickstart](docs/00-start-here/quickstart.md)
+2. [기본 정신모델](docs/00-start-here/mental-model.md)
+3. [복사 가능한 AGENTS.md](examples/project-operating-system/AGENTS.md)
 
-하나의 요청이 운영 파일, 구현, 리뷰, repair, receipt로 이어지는 모습은 [end-to-end 예시](docs/example-end-to-end.md)에서 볼 수 있다.
+### 첫 주
 
-## 최종 요약
+1. [운영 파일의 역할](docs/10-foundations/instruction-files.md)
+2. [docs 구조](docs/10-foundations/docs-structure.md)
+3. [워크플로우 패턴](docs/20-workflows/workflow-patterns.md)
+4. [End-to-end 예시](docs/20-workflows/example-end-to-end.md)
 
-나는 LLM을 “정답을 말하는 존재”로 사용하지 않는다. 대신 다음 조건을 갖춘 작업자로 사용한다.
+### 팀 표준화
 
-- 무엇이 권위 있는 요구사항인지 안다.
-- 자신의 작업 범위와 금지 사항을 안다.
-- 결과를 파일, diff, 테스트로 남긴다.
-- 다른 에이전트의 검증을 받을 수 있다.
-- 실패를 구체적인 수정 작업으로 바꾼다.
-- 다음 세션이 현재 상태에서 이어받을 수 있다.
+1. [팀 도입 가이드](docs/00-start-here/team-adoption.md)
+2. [하네스 선택](docs/20-workflows/harness-patterns.md)
+3. [작업 계약 템플릿](templates/agent-contracts.md)
+4. [평가 방식과 완료 조건](docs/90-evaluation/evaluation-rubric.md)
 
-좋은 에이전트 워크플로우는 모델 하나가 똑똑해지는 것이 아니라, **모델이 바뀌어도 결과의 신뢰성을 유지하는 시스템**이다.
+## 저장소 지도
 
-## 문서 상태
+| 위치 | 목적 |
+|---|---|
+| [`docs/00-start-here`](docs/00-start-here/README.md) | Claude Code에 익숙하지 않은 독자의 시작점 |
+| [`docs/10-foundations`](docs/10-foundations/README.md) | 운영 파일, 문서 구조, 핵심 개념 |
+| [`docs/20-workflows`](docs/20-workflows/README.md) | 반복 workflow, harness, 실제 사례 |
+| [`docs/30-tooling`](docs/30-tooling/README.md) | Claude Code와 외부 skill/plugin |
+| [`docs/90-evaluation`](docs/90-evaluation/README.md) | 품질 기준, 독립 리뷰, 평가 결과 |
+| [`examples`](examples/project-operating-system/AGENTS.md) | 복사 가능한 프로젝트 운영 skeleton |
+| [`templates`](templates/README.md) | 구현, 리뷰, handoff, DAG, orchestrator 작업 계약 |
 
-초안이다. 실제 사례, 스크린샷, 도구별 설정 예시는 개인 정보와 프로젝트 정보를 제거한 뒤 추가할 예정이다.
+## 이 자료의 완료 기준
+
+이 저장소 자체도 느낌으로 완료하지 않는다. [평가 계약](docs/90-evaluation/evaluation-rubric.md)에 따라 자동 검사, 초보 독자 과제, 두 축의 독립 리뷰를 통과해야 한다. 목표는 85/100 이상, 모든 영역 3.5/5 이상, High·Medium finding 0개다.
+
+## 라이선스
+
+[MIT](LICENSE)
