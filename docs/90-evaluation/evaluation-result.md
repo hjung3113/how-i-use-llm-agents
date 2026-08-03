@@ -1,105 +1,52 @@
-# 최종 평가 결과
+# 이번 개편 평가 기록
 
 - 상태: 완료
 - 평가일: 2026-08-04
-- 평가 계약 기준점: `31992f4`
-- 최종 리뷰 대상: `edb6a13`
-- 대상 독자: 회사에서 Claude Code를 처음 도입하는 개발자와 기술 리더
-- 보수적 완료 점수: **92.5/100**
-
-두 독립 리뷰 점수 중 낮은 값을 공식 완료 점수로 사용했다.
+- 기준점: `0d05757`
+- 대상: 현재 working tree 전체
+- 주 평가 질문: 초보자부터 중상급자까지 저자가 LLM agent를 실제로 어떻게 쓰는지 추가 설명 없이 재구성할 수 있는가?
 
 ## 자동 검사
 
-- `git diff --check`: 통과
-- 내부 Markdown 파일·anchor 링크: 통과
-- 문서별 semantic H1: 통과
-- private 경로·credential pattern: 미검출
-- README와 section index 탐색 경로: 통과
+최종 재검토 직전에 다음을 다시 실행한다.
 
-외부 링크의 현재 내용은 작성 시점에 공식 문서와 공개 source repository를 확인했다. 이후 변경될 수 있으므로 실제 설치와 설정 전 원문을 다시 확인한다.
+- `git diff --check`
+- tracked 및 commit 예정 Markdown의 내부 파일·anchor 링크 검사
+- 개인 경로·credential pattern 검사
+- Impeccable doctor와 canonical script syntax 검사
 
-## 독자 과제
+## Luna Max 블라인드 이해도 테스트
 
-| 과제 | 결과 |
-|---|---|
-| 2분 안에 핵심 주장 설명 | PASS |
-| 숙련도와 위험에 맞는 경로 선택 | PASS |
-| 15분 안에 `AGENTS.md`와 `CLAUDE.md` 적용 | PASS |
-| Context, Memory, Handoff 구분 | PASS |
-| 단일 agent와 독립 review 선택 | PASS |
-| edit, commit, push, merge 승인 경계 구분 | PASS |
-| 필요한 최소 evidence 선택 | PASS |
-| 핵심 용어와 혼동 경계 설명 | PASS |
+평가표와 개편 목표를 주지 않고 README에서 시작한 세 페르소나가 모두 핵심 방식을 재구성했다.
 
-결과: **8/8 PASS**
+| 페르소나 | 주로 이해한 내용 | 결과 |
+|---|---|---|
+| 입문 개발자 | live state 확인, 좁은 계약, 단일 agent 기본값, evidence로 완료 | PASS |
+| 실무 개발자 | 위험에 따른 독립 review, 실제 독립성이 있을 때만 DAG·worktree, 사람의 승인 경계 | PASS |
+| PM/창업자 | meta-prompting은 실행 전 정제 단계, 제품 권위와 delivery 기록의 분리 | PASS |
 
-## 독립 리뷰 점수
+결과: **3/3 PASS**. 실제 적용은 보조 질문으로만 확인했다. 실무 독자가 `HANDOFF`를 과거 학습 저장소로 읽을 여지가 있어 instruction-file 표를 분리해 바로잡았다.
 
-### 독자/Spec
+## 독립 Sol High 리뷰
 
-| 영역 | 점수 | 가중 점수 |
-|---|---:|---:|
-| 대상 독자와 전달력 | 4.7/5 | 18.8/20 |
-| 정보 구조와 탐색성 | 4.7/5 | 18.8/20 |
-| 실전 적용성 | 4.5/5 | 18.0/20 |
-| 정확성과 권위 분리 | 4.7/5 | 14.1/15 |
-| 안전과 회사 공유 적합성 | 4.6/5 | 13.8/15 |
-| 도구 중립성과 유지관리 | 4.5/5 | 9.0/10 |
-| **합계** | | **92.5/100** |
+첫 검토 판정은 `REVISE`였다. 다음을 수정했다.
 
-Verdict: `SPEC_ACCEPT`
+- Impeccable 설치본의 누락된 degraded fallback 문서 복구
+- provider별 project-local skill과 hook 상태를 정확히 구분
+- Apache-2.0 `LICENSE`와 제3자 `NOTICE` 포함
+- 공개 저장소 사례를 실제 archived delivery plan에 맞게 수정
+- 이전 평가 계약 결과를 이번 계약의 기록으로 교체
+- 위험 증가 시 도구를 선형으로 모두 추가한다는 오해 제거
 
-### 구조/Standards
+최종 독립 재검토는 **ACCEPT**였다. High·Medium finding은 0건이고, 가중 점수는 **93.5/100**이다. Low 1건이었던 copyable `CONTEXT.md`의 고정 권위 순서는 질문별 권위 표로 바꾸고 focused recheck를 통과했다.
 
-| 영역 | 점수 | 가중 점수 |
-|---|---:|---:|
-| 대상 독자와 전달력 | 4.8/5 | 19.2/20 |
-| 정보 구조와 탐색성 | 4.6/5 | 18.4/20 |
-| 실전 적용성 | 4.8/5 | 19.2/20 |
-| 정확성과 권위 분리 | 4.8/5 | 14.4/15 |
-| 안전과 회사 공유 적합성 | 4.7/5 | 14.1/15 |
-| 도구 중립성과 유지관리 | 4.5/5 | 9.0/10 |
-| **합계** | | **94.3/100** |
+## 현재 Gate 상태
 
-Verdict: `STANDARDS_ACCEPT`
+- 독자 과제: **10/10 PASS**
+- 블라인드 이해도: **3/3 PASS**
+- 필수 gate: **14/14 PASS**
+- 미해결 High·Medium: **0건**
+- 독자/Spec: **ACCEPT**
+- 구조/Standards: **ACCEPT**
 
-## 필수 Gate
-
-| # | Gate | 결과 |
-|---:|---|---|
-| 1 | 첫 화면에 독자, 결과, 시작 경로 | PASS |
-| 2 | 검증 가능한 15분 Quickstart | PASS |
-| 3 | `docs/` 목적·수명·권위 예시 | PASS |
-| 4 | 다섯 운영 파일 예시 | PASS |
-| 5 | 초급→중급→고급과 하향 조건 | PASS |
-| 6 | 익명화된 session-derived pattern | PASS |
-| 7 | test·review·CI·black-box evidence 한계 | PASS |
-| 8 | local commit과 remote publication 승인 분리 | PASS |
-| 9 | 링크·whitespace·privacy 자동 검사 | PASS |
-| 10 | 미해결 High·Medium finding 없음 | PASS |
-| 11 | 설명 우선 구조와 쉬운 용어집 | PASS |
-
-결과: **11/11 PASS**
-
-## 리뷰에서 해결한 주요 Finding
-
-- Quickstart의 실제 두 파일 적용 경로와 optional-file 조건
-- README 상세 중복과 progressive disclosure
-- 공개 source attribution과 privacy 정책 충돌
-- session 분석 방법과 한계
-- 내부 result 확정과 외부 publication authority의 용어 혼동
-- evidence 종류별 범위와 한계 누락
-- 설명자료인데 Quickstart가 이해보다 먼저 오던 학습 순서
-- 입문 glossary와 고급 concepts reference의 중복
-
-## 완료 판정
-
-[평가 계약](evaluation-rubric.md)의 완료 조건을 충족한다.
-
-- 공식 점수 92.5 ≥ 85
-- 모든 영역 ≥ 3.5/5
-- 독자 과제 8/8
-- 필수 gate 11/11
-- 두 독립 review 모두 ACCEPT
-- 미해결 High·Medium finding 0개
+평가 계약의 완료 조건을 충족한다.

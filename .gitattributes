@@ -1,0 +1,4 @@
+.agents/skills/impeccable/** whitespace=-trailing-space,-blank-at-eof
+.claude/skills/impeccable/** whitespace=-trailing-space,-blank-at-eof
+.opencode/skills/impeccable/** whitespace=-trailing-space,-blank-at-eof
+third_party/impeccable/** whitespace=-blank-at-eof

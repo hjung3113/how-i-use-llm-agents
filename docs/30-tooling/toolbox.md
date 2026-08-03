@@ -4,6 +4,18 @@
 
 ## 핵심 도구군
 
+### [Meta-Prompt](https://github.com/hjung3113/meta-prompting-skill)
+
+여러 메시지의 Context Dump를 승인된 실행 계약과 Fresh Run용 prompt로 정제하는 하나의 guided session이다. Codex, Claude Code, OpenCode가 같은 canonical workflow를 사용하도록 얇은 adapter를 둔다.
+
+주로 사용하는 흐름:
+
+```text
+Context Dump → 한 결정씩 확인 → Alignment Gate → Fresh Run
+```
+
+잘 맞는 상황: 요구사항과 자료가 흩어져 있고, 구현 전에 범위·제외 사항·Acceptance Criteria·증거를 합의해야 할 때. 실제 적용은 [메타프롬프팅 가이드](../20-workflows/meta-prompting.md)에 있다.
+
 ### [Superpowers](https://github.com/obra/superpowers)
 
 브레인스토밍, 계획 작성, 테스트 주도 개발, 디버깅, subagent-driven development처럼 소프트웨어 작업의 반복 절차를 skill로 제공한다.
@@ -73,6 +85,12 @@ new milestone → discuss phase → plan phase
 - compaction 이후에는 이전 결정을 검색하고 이어간다.
 
 잘 맞는 상황: 로그, 대규모 코드 검색, 긴 세션처럼 컨텍스트 범람 위험이 큰 작업.
+
+### [Impeccable](https://github.com/pbakaus/impeccable)
+
+AI가 만든 frontend의 시각적 상투성, hierarchy, layout, typography, accessibility를 같은 design vocabulary와 deterministic detector로 검토하는 skill이다. 이 저장소에는 Claude Code, Codex, OpenCode용 project-local skill이 설치돼 있다. Codex hook은 함께 공유되지만 사용자가 `/hooks`로 승인해야 한다. Claude Code hook은 설치 시 생성되는 machine-local 설정이라 저장소에 commit하지 않으며, OpenCode에는 자동 hook이 없다. 재배포 고지는 [`third_party/impeccable/`](../../third_party/impeccable/)에 둔다.
+
+잘 맞는 상황: 실제 UI를 만들거나 기존 화면을 critique·audit·polish할 때. 제품 디자인 문서 구조나 일반 코드 review를 대신하지 않으며, 프로젝트의 디자인 맥락이 필요할 때만 별도 `/impeccable init`을 실행한다.
 
 ## 내장 기능과 연결 도구
 

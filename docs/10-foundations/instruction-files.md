@@ -23,7 +23,8 @@ flowchart TD
 | 제품은 무엇을 보장해야 하는가? | 제품 설계, 아키텍처, ADR |
 | 이번 배달 범위는 무엇인가? | 현재 Issue와 acceptance criteria |
 | 지금 실제 상태는 무엇인가? | Git, 런타임, 테스트, PR, CI의 live evidence |
-| 과거에 무엇을 배웠는가? | `MEMORY.md`와 `HANDOFF.md` |
+| 과거에서 어떤 교훈을 재사용하는가? | `MEMORY.md` |
+| 직전 실행은 어디까지 왔는가? | `HANDOFF.md` |
 
 같은 질문 안에서 충돌하면 사용자의 더 최신이고 구체적인 지시와 더 좁은 범위의 저장소 규칙을 우선한다. 서로 다른 질문의 권위를 섞지 않는다. 예를 들어 Issue는 배달 범위를 정하지만 live Git 상태를 덮어쓰지 않는다. Handoff와 memory는 탐색 경로를 알려주지만 현재 상태를 증명하지 않는다.
 

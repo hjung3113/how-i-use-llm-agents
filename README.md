@@ -13,6 +13,8 @@
 
 ## 어디서 시작할까
 
+처음이고 무엇을 고를지 모르겠다면 [기본 정신모델](docs/00-start-here/mental-model.md)로 이 방식부터 이해한다. 직접 해보고 싶을 때만 [15분 Quickstart](docs/00-start-here/quickstart.md)로 넘어가고, 나머지는 실제 문제가 생겼을 때 찾아본다.
+
 | 나의 상황 | 권장 시작점 | 얻는 결과 |
 |---|---|---|
 | Claude Code가 처음이다 | [기본 정신모델](docs/00-start-here/mental-model.md) | 먼저 이 방식의 이유와 안전 경계 이해 |
@@ -20,6 +22,8 @@
 | 몇 번 썼지만 결과가 들쭉날쭉하다 | [기본 정신모델](docs/00-start-here/mental-model.md) | 긴 prompt 대신 지속되는 작업 계약 |
 | 팀 규칙을 만들고 있다 | [팀 도입 가이드](docs/00-start-here/team-adoption.md) | 회사 정책과 개인 workflow의 분리 |
 | 여러 agent를 운영하고 싶다 | [하네스 패턴](docs/20-workflows/harness-patterns.md) | 위험도에 맞는 역할과 gate 선택 |
+| 흩어진 요구사항을 실행 prompt로 정리하고 싶다 | [메타프롬프팅](docs/20-workflows/meta-prompting.md) | 승인된 범위와 완료 조건이 있는 Fresh Run prompt |
+| 제품 설계 문서를 어떻게 나눌지 고민이다 | [제품 설계 문서 분할](docs/10-foundations/product-design-docs.md) | 규모에 맞는 구조와 권위 충돌 방지 규칙 |
 | 낯선 용어가 많다 | [쉬운 용어집](docs/00-start-here/glossary.md) | agent workflow의 공통 언어 |
 
 ## 2분 요약
@@ -42,11 +46,25 @@ flowchart LR
 현재 상태 확인 → 좁은 작업 계약 → 구현 → 관련 테스트 → diff 확인 → 보고
 ```
 
-변경 위험이 커질 때만 계획, 독립 review, worktree lane, evidence automation을 차례로 추가한다. 복잡한 하네스는 그것이 막는 실제 실패가 있을 때만 사용한다.
+변경 위험이 커질 때만 실제 실패 위험을 막는 계획, 독립 review, worktree lane, evidence automation을 선택해 추가한다. 복잡한 하네스는 그것이 막는 실제 실패가 있을 때만 사용한다.
 
-## 이 자료를 이해하는 핵심 이야기
+## 한 장으로 보는 내가 실제로 쓰는 방식
 
-처음에는 Claude Code에 한 작업을 직접 부탁한다. 반복하다 보면 매번 같은 설명과 검증을 사람이 다시 해야 한다. 그래서 규칙과 제품 맥락을 파일에 남기고, 중요한 결과는 다른 역할이 검증하게 한다. 작업이 여러 개가 되면 오케스트레이터가 context 전달·task 선택·상태 확인·repair를 맡아 사람이 하던 운영 노동을 줄인다.
+내 기본값은 **한 agent에게 좁은 작업 하나를 맡기고 증거로 끝내는 것**이다. 작업이 어렵다는 이유만으로 agent 수를 늘리지 않는다.
+
+```text
+1. 현재 Git·runtime 상태와 권위 문서를 먼저 확인한다.
+2. 목표, 허용 범위, 금지 사항, 완료 조건을 작업 계약으로 좁힌다.
+3. agent가 구현하고 가장 관련 있는 test·diff·실제 동작을 확인한다.
+4. 위험이 크면 구현과 독립 review를 분리하고 finding만 집중 수정한다.
+5. 독립 작업이 실제로 여러 개일 때만 worktree와 task DAG를 쓴다.
+6. 요청된 commit·push·PR·merge·issue close 단계까지 각각의 권한을 확인하며 배달한다.
+7. 다음 세션이 필요하면 현재 사실과 남은 작업을 HANDOFF에 남긴다.
+```
+
+요구사항 자체가 흩어져 있으면 구현 전에 [메타프롬프팅](docs/20-workflows/meta-prompting.md)으로 실행 계약을 정제한다. 제품의 목적·도메인·아키텍처처럼 오래가는 권위는 delivery plan과 분리하고, 규모가 커질 때만 [여러 설계 문서](docs/10-foundations/product-design-docs.md)로 나눈다.
+
+반복하다 보면 매번 같은 설명과 검증을 사람이 다시 해야 한다. 그래서 규칙과 제품 맥락을 파일에 남기고, 중요한 결과는 다른 역할이 검증하게 한다. 작업이 여러 개가 되면 오케스트레이터가 context 전달·task 선택·상태 확인·repair를 맡아 사람이 하던 운영 노동을 줄인다.
 
 즉, 발전 방향은 “더 긴 prompt”가 아니다.
 
@@ -57,7 +75,7 @@ flowchart LR
       → 오케스트레이터가 반복 운영을 담당
 ```
 
-이 이야기를 이해한 뒤 필요한 예시와 템플릿만 선택해 적용하면 된다.
+이 흐름을 이해한 뒤 필요한 예시와 템플릿만 선택해 적용하면 된다.
 
 ## 내가 매번 지키는 다섯 가지
 
@@ -120,7 +138,7 @@ project/
 
 ### 첫날
 
-1. README의 [핵심 이야기](#이-자료를-이해하는-핵심-이야기)
+1. README의 [내가 실제로 쓰는 방식](#한-장으로-보는-내가-실제로-쓰는-방식)
 2. [기본 정신모델](docs/00-start-here/mental-model.md)
 3. [쉬운 용어집](docs/00-start-here/glossary.md)
 4. [선택: 15분 Quickstart](docs/00-start-here/quickstart.md)
@@ -130,8 +148,10 @@ project/
 
 1. [운영 파일의 역할](docs/10-foundations/instruction-files.md)
 2. [자주 사용하는 workflow](docs/20-workflows/workflow-patterns.md)
-3. [전체 세션에서 발견한 추가 패턴](docs/20-workflows/session-derived-patterns.md)
-4. [End-to-end 예시](docs/20-workflows/example-end-to-end.md)
+3. [메타프롬프팅](docs/20-workflows/meta-prompting.md)
+4. [제품 설계 문서 분할](docs/10-foundations/product-design-docs.md)
+5. [전체 세션에서 발견한 추가 패턴](docs/20-workflows/session-derived-patterns.md)
+6. [End-to-end 예시](docs/20-workflows/example-end-to-end.md)
 
 ### 팀 표준화와 고급 운영
 
