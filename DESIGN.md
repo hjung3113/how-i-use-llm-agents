@@ -14,7 +14,7 @@ colors:
 typography:
   display:
     fontFamily: "SUITE Display, Apple SD Gothic Neo, sans-serif"
-    fontSize: "clamp(3.2rem, 5.4vw, 5.2rem)"
+    fontSize: "clamp(3rem, 4.6vw, 4.4rem)"
     fontWeight: 800
     lineHeight: 0.94
     letterSpacing: "-0.035em"
@@ -105,7 +105,7 @@ The palette is an archival proof sheet: paper and ink do most of the work, while
 
 - **Display** (800, responsive display scale, tight line-height): home and document titles establish the reading subject.
 - **Headline** (700, responsive 1.15–3rem scale, 1.08–1.2 line-height): section and column headings organize the proof table and reader.
-- **Body** (400, 1rem, 1.65 line-height): source-derived reading copy stays comfortably legible in the 72ch measure.
+- **Body** (400, 1rem, 1.65 line-height): source-derived reading copy stays comfortably legible in the 82ch desktop measure.
 - **Label** (600, 0.78rem, monospace): source paths, step numbers, and fine evidence labels remain compact and visibly distinct.
 
 ### Named Rules
@@ -116,7 +116,7 @@ The palette is an archival proof sheet: paper and ink do most of the work, while
 
 The home surface is an unequal three-column proof table: author checks, the dominant reading path, and human decisions. Structural rules, arrow connectors, and registration marks make the relationship legible. On medium screens it becomes a two-column arrangement with the decision boundary spanning below; on small screens the reading path leads, then checks, then decisions.
 
-The document reader uses a three-part ledger: sticky source navigation, a centered document column, and a sticky local outline. Its reading measure is 72ch; wide tables and code scroll inside their own element rather than widening the page. The masthead remains visible at the top, and its compact height is preserved as a layout token.
+The document reader uses a three-part ledger: sticky source navigation, a centered document column, and a sticky local outline. Its desktop reading measure is 82ch so Korean prose does not fragment inside the three-part ledger; wide tables and code scroll inside their own element rather than widening the page. The masthead remains visible at the top, and its compact height is preserved as a layout token.
 
 **The Reading-Path-First Rule.** On mobile, preserve the central recommended sequence as the first content column; do not collapse it into a generic card stack.
 
@@ -162,7 +162,7 @@ The proof note is a sparse vermilion boundary: a top correction rule, compact co
 
 - **Do** keep a visible source path, numbered sequence, or ledger rule wherever the interface represents provenance or workflow order.
 - **Do** use the paper/ink hierarchy first, teal for alignment, and vermilion only for correction-level meaning.
-- **Do** preserve the 72ch document reading measure and confine wide code or tables to local horizontal overflow.
+- **Do** preserve the 82ch desktop document reading measure and confine wide code or tables to local horizontal overflow.
 - **Do** retain square edges and one-pixel structural rules on new reader and navigation surfaces.
 
 ### Don't:

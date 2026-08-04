@@ -597,15 +597,15 @@
   },
   {
     "path": "docs/20-workflows/design-alignment.md",
-    "bytes": 10087,
+    "bytes": 10097,
     "headings": [
       {
         "level": 1,
-        "text": "설계 리뷰와 grilling: 머릿속 모델을 문서 권위로 옮기는 과정"
+        "text": "설계 리뷰와 집중 질문: 머릿속 모델을 문서 권위로 옮기는 과정"
       },
       {
         "level": 2,
-        "text": "여기서 grilling이란"
+        "text": "집중 질문(grilling)이란"
       },
       {
         "level": 3,
@@ -1635,7 +1635,7 @@
   },
   {
     "path": "README.md",
-    "bytes": 11712,
+    "bytes": 11811,
     "headings": [
       {
         "level": 1,

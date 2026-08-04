@@ -106,6 +106,20 @@
     return level(0, parsed[0].indent, parsed[0].ordered).html;
   }
 
+  function renderMermaid(lines) {
+    const labels = new Map();
+    for (const line of lines) {
+      for (const match of line.matchAll(/(\w+)\[([^\]]+)\]/g)) labels.set(match[1], match[2]);
+    }
+    const edges = lines.slice(1).map((line) => line.trim().match(/^(\w+)(?:\[[^\]]+\])?\s*-->\s*(?:\|([^|]+)\|\s*)?(\w+)(?:\[[^\]]+\])?$/)).filter(Boolean);
+    if (!edges.length) return "";
+    const node = (id) => escapeHtml((labels.get(id) || id).replace(/<br\s*\/?\s*>/gi, " · "));
+    return `<figure class="flow-diagram" aria-label="문서 흐름도">
+      <div>${edges.map((edge) => `<div class="flow-edge"><span>${node(edge[1])}</span><i>${edge[2] ? escapeHtml(edge[2]) : "다음"}</i><span>${node(edge[3])}</span></div>`).join("")}</div>
+      <figcaption>흐름도</figcaption>
+    </figure>`;
+  }
+
   function isBoundary(lines, index) {
     const line = lines[index] || "";
     return !line.trim() || /^#{1,6}\s/.test(line) || /^```/.test(line) || /^>\s?/.test(line) || /^(\s*)([-+*]|\d+\.)\s+/.test(line) || /^\s*([-*_])(?:\s*\1){2,}\s*$/.test(line);
@@ -128,7 +142,8 @@
         index += 1;
         while (index < lines.length && !/^```/.test(lines[index])) body.push(lines[index++]);
         if (index < lines.length) index += 1;
-        html.push(`<pre${fence[1] ? ` data-language="${escapeHtml(fence[1])}"` : ""}><code>${escapeHtml(body.join("\n"))}</code></pre>`);
+        const diagram = fence[1] === "mermaid" && renderMermaid(body);
+        html.push(diagram || `<pre${fence[1] ? ` data-language="${escapeHtml(fence[1])}"` : ""}><code>${escapeHtml(body.join("\n"))}</code></pre>`);
         continue;
       }
 
@@ -193,8 +208,8 @@
       if (!groups.has(doc.group)) groups.set(doc.group, []);
       groups.get(doc.group).push(doc);
     }
-    ledger.innerHTML = `<h2>전체 문서 <span>${docs.length}</span></h2>` + [...groups].map(([group, items]) => `
-      <details class="source-group" open>
+    ledger.innerHTML = `<h2>문서 찾아보기 <span>${docs.length}</span></h2>` + [...groups].map(([group, items], index) => `
+      <details class="source-group"${index === 0 ? " open" : ""}>
         <summary>${escapeHtml(group)}</summary>
         <ul>${items.map((doc) => `<li><a href="#/${doc.path}" data-path="${doc.path}">${escapeHtml(doc.title)}</a></li>`).join("")}</ul>
       </details>`).join("");
@@ -246,15 +261,32 @@
   function showHome() {
     home.hidden = false;
     reader.hidden = true;
-    reader.classList.remove("ledger-only");
+    reader.classList.remove("ledger-only", "not-found");
     document.title = "How I Use LLM Agents";
     setLedgerOpen(false);
     requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, 0)));
   }
 
+  function showNotFound(path) {
+    document.querySelectorAll(".source-ledger [aria-current]").forEach((item) => item.removeAttribute("aria-current"));
+    article.innerHTML = `<section class="not-found-state" aria-labelledby="not-found-title">
+      <p class="source-path">${escapeHtml(path)}</p>
+      <h1 id="not-found-title">문서를 찾지 못했습니다</h1>
+      <p>주소가 바뀌었거나 문서가 이동됐을 수 있습니다. 읽기 지도로 돌아가거나 README부터 다시 시작하세요.</p>
+      <p class="source-actions"><a href="#/home">읽기 지도로 돌아가기</a><a href="#/README.md">README 읽기</a></p>
+    </section>`;
+    outline.innerHTML = "";
+    home.hidden = true;
+    reader.hidden = false;
+    reader.classList.add("not-found");
+    document.title = "문서를 찾지 못했습니다 · How I Use LLM Agents";
+    setLedgerOpen(false);
+    requestAnimationFrame(() => article.focus({ preventScroll: true }));
+  }
+
   function showDocument(path, headingId) {
     const doc = byPath.get(path);
-    if (!doc) { showHome(); return; }
+    if (!doc) { showNotFound(path); return; }
     const rendered = markdown(doc.raw, doc.path);
     const first = rendered.headings[0];
     const title = first ? first.label : doc.title;
@@ -263,7 +295,7 @@
       <header class="document-header">
         <p class="source-path">${escapeHtml(doc.path)}</p>
         <h1>${escapeHtml(title)}</h1>
-        <div class="source-actions"><a href="${doc.path}">원본 Markdown</a><a href="https://github.com/hjung3113/how-i-use-llm-agents/blob/main/${doc.path}">GitHub에서 보기</a><a href="#/home">읽기 지도로 돌아가기</a></div>
+        <div class="source-actions"><a href="${doc.path}">원문 보기</a><a href="https://github.com/hjung3113/how-i-use-llm-agents/blob/main/${doc.path}">GitHub에서 보기</a><a href="#/home">읽기 지도로 돌아가기</a></div>
       </header>
       <div class="document-body" data-source-path="${doc.path}">${body}</div>
       ${recommendedNavigation(doc.path)}`;
@@ -271,10 +303,14 @@
     outline.innerHTML = `<h2>이 문서의 목차</h2><ol>${local.map((item) => `<li class="level-${item.level}"><a href="#/${doc.path}/${item.id}">${escapeHtml(item.label)}</a></li>`).join("")}</ol>`;
     document.querySelectorAll(".source-ledger [aria-current]").forEach((item) => item.removeAttribute("aria-current"));
     const active = ledger.querySelector(`[data-path="${CSS.escape(doc.path)}"]`);
-    if (active) active.setAttribute("aria-current", "page");
+    if (active) {
+      ledger.querySelectorAll(".source-group").forEach((group) => { group.open = false; });
+      active.closest(".source-group").open = true;
+      active.setAttribute("aria-current", "page");
+    }
     home.hidden = true;
     reader.hidden = false;
-    reader.classList.remove("ledger-only");
+    reader.classList.remove("ledger-only", "not-found");
     document.title = `${title} · How I Use LLM Agents`;
     setLedgerOpen(false);
     requestAnimationFrame(() => requestAnimationFrame(() => {

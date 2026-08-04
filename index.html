@@ -21,8 +21,8 @@
   <header class="masthead">
     <a class="wordmark" href="#/home" aria-label="How I Use LLM Agents 홈">How I Use LLM Agents</a>
     <div class="masthead-actions">
-      <button class="menu-button" type="button" aria-controls="source-ledger" aria-expanded="false">전체 문서</button>
-      <a href="README.md">원본 README</a>
+      <button class="menu-button" type="button" aria-controls="source-ledger" aria-expanded="false">문서 찾기</button>
+      <a href="README.md">원문 보기</a>
       <a href="https://github.com/hjung3113/how-i-use-llm-agents">GitHub</a>
     </div>
   </header>
@@ -37,7 +37,7 @@
         <section class="proof-column checks" aria-labelledby="checks-title">
           <h2 id="checks-title">저자가 먼저 확인하는 것</h2>
           <ol class="check-sequence">
-            <li><a href="#/docs/00-start-here/mental-model.md/현재-실행-상태"><strong>현재 상태</strong><span>추측보다 Git·test·runtime</span></a></li>
+            <li><a href="#/docs/00-start-here/mental-model.md/현재-실행-상태"><strong>현재 상태</strong><span>추측보다 Git·테스트·실행 상태</span></a></li>
             <li><a href="#/docs/10-foundations/concepts.md/정보-권위"><strong>권위</strong><span>질문별 최종 판단 근거</span></a></li>
             <li><a href="#/docs/10-foundations/concepts.md/요청에서-실행까지"><strong>계약</strong><span>목표·범위·금지·완료 조건</span></a></li>
             <li><a href="#/docs/10-foundations/concepts.md/결과와-검증"><strong>증거</strong><span>주장에 맞는 확인 자료</span></a></li>
@@ -49,8 +49,8 @@
         <nav class="proof-column reading-path" aria-labelledby="path-title">
           <h2 id="path-title">이 저장소를 읽는 순서</h2>
           <ol>
-            <li><a href="#/docs/00-start-here/README.md"><span>처음 이해하기</span><small>목적, 용어, 전체 지도</small></a></li>
-            <li><a href="#/docs/10-foundations/README.md"><span>기반 다지기</span><small>authority, contract, evidence</small></a></li>
+            <li><a href="#/docs/00-start-here/README.md"><span>여기서 시작 · 처음 이해하기</span><small>목적, 용어, 전체 지도</small></a></li>
+            <li><a href="#/docs/10-foundations/README.md"><span>기반 다지기</span><small>권위·작업 계약·검증 증거</small></a></li>
             <li><a href="#/docs/20-workflows/README.md"><span>워크플로</span><small>작업 흐름과 단계별 경계</small></a></li>
             <li><a href="#/docs/30-tooling/README.md"><span>도구와 역할</span><small>목적에 맞는 도구 선택</small></a></li>
             <li><a href="#/examples/README.md"><span>예시와 템플릿</span><small>실제 문서 형태 확인</small></a></li>
@@ -63,11 +63,11 @@
           <ul>
             <li>제품 목표와 사용자 계약</li>
             <li>현재 제품·설계 권위의 선택<br><small>delivery plan은 실행 순서를, archive는 과거 이력을 다루며 제품 판단을 덮어쓰지 않음</small></li>
-            <li>중요한 trade-off와 경계</li>
+            <li>중요한 선택의 장단점과 경계</li>
             <li>commit·push·merge 같은 외부 효과</li>
           </ul>
           <p class="proof-note"><strong>핵심 교정:</strong> reviewer는 문서가 기준을 만족하는지 평가합니다. 사용자의 제품 결정을 대신하지 않습니다.</p>
-          <a class="text-link" href="#/docs/20-workflows/design-alignment.md">설계 정렬과 grilling 읽기</a>
+          <a class="text-link" href="#/docs/20-workflows/design-alignment.md">설계 정렬과 집중 질문 읽기</a>
         </aside>
       </div>
 
@@ -99,9 +99,10 @@
     <section id="reader" class="reader" hidden aria-label="문서 읽기">
       <nav class="reader-context" aria-label="저자의 작업 지도">
         <a href="#">작업 지도</a>
-        <span>상태·권위·계약 확인</span><i aria-hidden="true">→</i>
-        <span>권장 순서로 원문 읽기</span><i aria-hidden="true">→</i>
-        <span>중요 결정은 사람에게</span>
+        <span class="reader-context-current">현재 문서 읽기</span>
+        <span class="reader-context-detail">상태·권위·계약 확인</span><i class="reader-context-detail" aria-hidden="true">→</i>
+        <span class="reader-context-detail">권장 순서로 원문 읽기</span><i class="reader-context-detail" aria-hidden="true">→</i>
+        <span class="reader-context-detail">중요 결정은 사람에게</span>
       </nav>
       <nav id="source-ledger" class="source-ledger" aria-label="전체 문서"></nav>
       <article id="document" class="document" tabindex="-1"></article>
