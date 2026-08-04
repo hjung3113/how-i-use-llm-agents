@@ -10,6 +10,7 @@
   const outline = document.querySelector("#local-outline");
   const menu = document.querySelector(".menu-button");
   const mobileLedger = matchMedia("(max-width: 680px)");
+  let diagramCount = 0;
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
   function escapeHtml(value) {
@@ -113,10 +114,77 @@
     }
     const edges = lines.slice(1).map((line) => line.trim().match(/^(\w+)(?:\[[^\]]+\])?\s*-->\s*(?:\|([^|]+)\|\s*)?(\w+)(?:\[[^\]]+\])?$/)).filter(Boolean);
     if (!edges.length) return "";
-    const node = (id) => escapeHtml((labels.get(id) || id).replace(/<br\s*\/?\s*>/gi, " · "));
+    const ids = [...new Set(edges.flatMap((edge) => [edge[1], edge[3]]))];
+    const hub = ids.find((id) => edges.filter((edge) => edge[3] === id).length >= 3);
+    const columns = Math.min(4, ids.length);
+    const nodeWidth = 170;
+    const nodeHeight = 64;
+    const width = 920;
+    const gapX = columns > 1 ? (width - 80 - nodeWidth) / (columns - 1) : 0;
+    const rows = Math.ceil(ids.length / columns);
+    let height = rows * 150 + 40;
+    let points;
+    let hubSources = [];
+    let hubAdapters = [];
+    if (hub) {
+      hubSources = [...new Set(edges.filter((edge) => edge[3] === hub).map((edge) => edge[1]))];
+      hubAdapters = ids.filter((id) => id !== hub && !hubSources.includes(id));
+      const sources = [...hubAdapters, ...hubSources];
+      height = Math.max(340, sources.length * 82 + 40);
+      points = new Map(sources.map((id, index) => [id, { x: 50, y: 20 + index * 82 }]));
+      points.set(hub, { x: 700, y: (height - nodeHeight) / 2 });
+    } else {
+      points = new Map(ids.map((id, index) => {
+        const row = Math.floor(index / columns);
+        const slot = index % columns;
+        const column = row % 2 ? columns - slot - 1 : slot;
+        return [id, { x: 40 + column * gapX, y: 40 + row * 150 }];
+      }));
+    }
+    const reverse = new Set(edges.map((edge) => `${edge[1]}:${edge[3]}`));
+    const paths = edges.map((edge) => {
+      const from = points.get(edge[1]);
+      const to = points.get(edge[3]);
+      const fromX = from.x + nodeWidth / 2;
+      const fromY = from.y + nodeHeight / 2;
+      const toX = to.x + nodeWidth / 2;
+      const toY = to.y + nodeHeight / 2;
+      const dx = toX - fromX;
+      const dy = toY - fromY;
+      const boundary = 1 / Math.max(Math.abs(dx) / (nodeWidth / 2), Math.abs(dy) / (nodeHeight / 2));
+      const x1 = fromX + dx * boundary;
+      const y1 = fromY + dy * boundary;
+      const x2 = toX - dx * boundary;
+      const y2 = toY - dy * boundary;
+      const paired = reverse.has(`${edge[3]}:${edge[1]}`);
+      const longJump = Math.abs(dx) > gapX * 1.5 && Math.abs(dy) < 10;
+      const bend = longJump ? 58 : paired ? (edge[1] < edge[3] ? -28 : 28) : 0;
+      const mx = (x1 + x2) / 2;
+      const my = (y1 + y2) / 2 + bend;
+      const label = edge[2] ? `<text class="flow-label" x="${mx}" y="${my - 8}">${escapeHtml(edge[2])} → ${escapeHtml((labels.get(edge[3]) || edge[3]).replace(/<br\s*\/?\s*>/gi, " · "))}</text>` : "";
+      return `<path class="flow-line" d="M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}" marker-end="url(#flow-arrow)"/>${label}`;
+    }).join("");
+    const nodes = ids.map((id) => {
+      const point = points.get(id);
+      const label = escapeHtml((labels.get(id) || id).replace(/<br\s*\/?\s*>/gi, " · "));
+      return `<foreignObject x="${point.x}" y="${point.y}" width="${nodeWidth}" height="${nodeHeight}"><div xmlns="http://www.w3.org/1999/xhtml" class="flow-node">${label}</div></foreignObject>`;
+    }).join("");
+    const nodeLabel = (id) => escapeHtml((labels.get(id) || id).replace(/<br\s*\/?\s*>/gi, " · "));
+    const text = edges.map((edge) => `${nodeLabel(edge[1])} → ${edge[2] ? `${escapeHtml(edge[2])}: ` : ""}${nodeLabel(edge[3])}`).join("; ");
+    const adapterSummary = hubAdapters.map((id) => {
+      const target = edges.find((edge) => edge[1] === id)?.[3];
+      return `${nodeLabel(id)} → ${nodeLabel(target)} 경유.`;
+    }).join(" ");
+    const summary = hub
+      ? `${hubSources.length}개의 정보원이 ${nodeLabel(hub)}에 직접 연결됩니다.${adapterSummary ? ` ${adapterSummary}` : ""}`
+      : edges.some((edge) => reverse.has(`${edge[3]}:${edge[1]}`))
+        ? "목표에서 구현과 검증으로 진행하고, 실패하면 집중 수정 후 다시 검증합니다."
+        : `${nodeLabel(ids[0])}에서 ${nodeLabel(ids.at(-1))}까지 화살표를 따라 진행합니다.`;
+    const titleId = `flow-title-${++diagramCount}`;
     return `<figure class="flow-diagram" aria-label="문서 흐름도">
-      <div>${edges.map((edge) => `<div class="flow-edge"><span>${node(edge[1])}</span><i>${edge[2] ? escapeHtml(edge[2]) : "다음"}</i><span>${node(edge[3])}</span></div>`).join("")}</div>
-      <figcaption>흐름도</figcaption>
+      <svg viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="${titleId}"><title id="${titleId}">${summary}</title><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"/></marker></defs>${paths}${nodes}</svg>
+      <ol class="flow-mobile" aria-label="모바일용 흐름"><li>${edges.map((edge) => `<span>${nodeLabel(edge[1])}</span><i>${edge[2] ? `${escapeHtml(edge[2])} →` : "→"}</i><strong>${nodeLabel(edge[3])}</strong>`).join("</li><li>")}</li></ol>
+      <figcaption><span class="visually-hidden">${text}</span><span>${summary}</span></figcaption>
     </figure>`;
   }
 
