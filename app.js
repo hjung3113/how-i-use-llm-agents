@@ -116,9 +116,10 @@
     if (!edges.length) return "";
     const ids = [...new Set(edges.flatMap((edge) => [edge[1], edge[3]]))];
     const hub = ids.find((id) => edges.filter((edge) => edge[3] === id).length >= 3);
+    const branch = ids.find((id) => edges.filter((edge) => edge[1] === id).length >= 3);
     const columns = Math.min(4, ids.length);
     const nodeWidth = 170;
-    const nodeHeight = 64;
+    const nodeHeight = 80;
     const width = 920;
     const gapX = columns > 1 ? (width - 80 - nodeWidth) / (columns - 1) : 0;
     const rows = Math.ceil(ids.length / columns);
@@ -126,7 +127,38 @@
     let points;
     let hubSources = [];
     let hubAdapters = [];
-    if (hub) {
+    if (branch) {
+      const outgoing = new Map(ids.map((id) => [id, edges.filter((edge) => edge[1] === id).map((edge) => edge[3])]));
+      const root = ids.find((id) => !edges.some((edge) => edge[3] === id)) || ids[0];
+      const levels = new Map([[root, 0]]);
+      const queue = [root];
+      while (queue.length) {
+        const id = queue.shift();
+        for (const target of outgoing.get(id)) {
+          if (levels.has(target)) continue;
+          levels.set(target, levels.get(id) + 1);
+          queue.push(target);
+        }
+      }
+      const maxKnown = Math.max(...levels.values());
+      for (const id of ids) if (!levels.has(id)) levels.set(id, maxKnown + 1);
+      const groups = new Map();
+      for (const id of ids) {
+        const level = levels.get(id);
+        if (!groups.has(level)) groups.set(level, []);
+        groups.get(level).push(id);
+      }
+      const maxLevel = Math.max(...groups.keys());
+      height = maxLevel * 124 + nodeHeight + 80;
+      points = new Map();
+      for (const [level, group] of groups) {
+        const usable = width - nodeWidth - 80;
+        group.forEach((id, index) => points.set(id, {
+          x: 40 + (group.length === 1 ? usable / 2 : index * usable / (group.length - 1)),
+          y: 40 + level * 124
+        }));
+      }
+    } else if (hub) {
       hubSources = [...new Set(edges.filter((edge) => edge[3] === hub).map((edge) => edge[1]))];
       hubAdapters = ids.filter((id) => id !== hub && !hubSources.includes(id));
       const sources = [...hubAdapters, ...hubSources];
@@ -157,12 +189,14 @@
       const x2 = toX - dx * boundary;
       const y2 = toY - dy * boundary;
       const paired = reverse.has(`${edge[3]}:${edge[1]}`);
-      const longJump = Math.abs(dx) > gapX * 1.5 && Math.abs(dy) < 10;
+      const longJump = !branch && Math.abs(dx) > gapX * 1.5 && Math.abs(dy) < 10;
       const bend = longJump ? 58 : paired ? (edge[1] < edge[3] ? -28 : 28) : 0;
       const mx = (x1 + x2) / 2;
       const my = (y1 + y2) / 2 + bend;
-      const label = edge[2] ? `<text class="flow-label" x="${mx}" y="${my - 8}">${escapeHtml(edge[2])} → ${escapeHtml((labels.get(edge[3]) || edge[3]).replace(/<br\s*\/?\s*>/gi, " · "))}</text>` : "";
-      return `<path class="flow-line" d="M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}" marker-end="url(#flow-arrow)"/>${label}`;
+      const controlX = branch && to.y < from.y ? Math.max(20, Math.min(x1, x2) - 120) : mx;
+      const controlY = branch && to.y < from.y ? (y1 + y2) / 2 : my;
+      const label = edge[2] ? `<text class="flow-label" x="${controlX}" y="${controlY - 8}">${escapeHtml(edge[2])} → ${escapeHtml((labels.get(edge[3]) || edge[3]).replace(/<br\s*\/?\s*>/gi, " · "))}</text>` : "";
+      return `<path class="flow-line" d="M ${x1} ${y1} Q ${controlX} ${controlY} ${x2} ${y2}" marker-end="url(#flow-arrow)"/>${label}`;
     }).join("");
     const nodes = ids.map((id) => {
       const point = points.get(id);
@@ -175,15 +209,22 @@
       const target = edges.find((edge) => edge[1] === id)?.[3];
       return `${nodeLabel(id)} → ${nodeLabel(target)} 경유.`;
     }).join(" ");
-    const summary = hub
+    const branchTargetIds = branch ? edges.filter((edge) => edge[1] === branch).map((edge) => edge[3]) : [];
+    const branchTargets = branchTargetIds.map(nodeLabel);
+    const branchReturns = branch ? edges.filter((edge) => branchTargetIds.includes(edge[1]) && ids.indexOf(edge[3]) < ids.indexOf(edge[1])) : [];
+    const returnSummary = branchReturns.map((edge) => `${nodeLabel(edge[1])}는 ${nodeLabel(edge[3])}로 돌아갑니다.`).join(" ");
+    const summary = branch
+      ? `${nodeLabel(branch)} 다음에는 ${branchTargets.join(", ")}의 ${branchTargets.length}개 경로가 있습니다.${returnSummary ? ` ${returnSummary}` : ""}`
+      : hub
       ? `${hubSources.length}개의 정보원이 ${nodeLabel(hub)}에 직접 연결됩니다.${adapterSummary ? ` ${adapterSummary}` : ""}`
       : edges.some((edge) => reverse.has(`${edge[3]}:${edge[1]}`))
         ? "목표에서 구현과 검증으로 진행하고, 실패하면 집중 수정 후 다시 검증합니다."
         : `${nodeLabel(ids[0])}에서 ${nodeLabel(ids.at(-1))}까지 화살표를 따라 진행합니다.`;
+    const mobileEdges = edges.map((edge) => `<li${edge[1] === branch ? ` class="flow-mobile-branch" aria-label="${nodeLabel(branch)}에서 갈라지는 경로"` : ""}><span>${nodeLabel(edge[1])}</span><i>${edge[2] ? `${escapeHtml(edge[2])} →` : "→"}</i><strong>${nodeLabel(edge[3])}</strong></li>`).join("");
     const titleId = `flow-title-${++diagramCount}`;
     return `<figure class="flow-diagram" aria-label="문서 흐름도">
       <svg viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="${titleId}"><title id="${titleId}">${summary}</title><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"/></marker></defs>${paths}${nodes}</svg>
-      <ol class="flow-mobile" aria-label="모바일용 흐름"><li>${edges.map((edge) => `<span>${nodeLabel(edge[1])}</span><i>${edge[2] ? `${escapeHtml(edge[2])} →` : "→"}</i><strong>${nodeLabel(edge[3])}</strong>`).join("</li><li>")}</li></ol>
+      <ol class="flow-mobile" aria-label="모바일용 흐름">${mobileEdges}</ol>
       <figcaption><span class="visually-hidden">${text}</span><span>${summary}</span></figcaption>
     </figure>`;
   }

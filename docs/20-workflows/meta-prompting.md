@@ -30,14 +30,14 @@ Meta-Prompt는 planner, 구현자, verifier를 모두 대신하는 상위 시스
 
 ## 전체 흐름
 
-```text
-Context Dump
-  → Dump Complete Signal
-  → read-only grounding
-  → 한 번에 하나씩 material decision
-  → Alignment Gate 승인
-  → English Final Prompt + 검토 번역 + Run Instructions
-  → Target Tool의 Fresh Run에서 실행
+```mermaid
+flowchart LR
+    D[자료 모음 · Context Dump] --> S[모음 종료 선언]
+    S --> G[읽기 전용 근거 확인]
+    G --> Q[중요 결정 하나씩 확인]
+    Q --> A[정렬 승인]
+    A --> F[최종 실행 prompt<br/>검토 번역 · 실행 안내]
+    F --> R[새 실행 세션]
 ```
 
 중요한 경계는 두 가지다.

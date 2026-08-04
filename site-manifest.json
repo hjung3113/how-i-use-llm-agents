@@ -315,7 +315,7 @@
   },
   {
     "path": "docs/00-start-here/team-adoption.md",
-    "bytes": 2617,
+    "bytes": 3054,
     "headings": [
       {
         "level": 1,
@@ -597,7 +597,7 @@
   },
   {
     "path": "docs/20-workflows/design-alignment.md",
-    "bytes": 10097,
+    "bytes": 9935,
     "headings": [
       {
         "level": 1,
@@ -719,7 +719,7 @@
   },
   {
     "path": "docs/20-workflows/meta-prompting.md",
-    "bytes": 4852,
+    "bytes": 4900,
     "headings": [
       {
         "level": 1,
@@ -753,7 +753,7 @@
   },
   {
     "path": "docs/20-workflows/orchestrator-as-operator.md",
-    "bytes": 8838,
+    "bytes": 9026,
     "headings": [
       {
         "level": 1,

@@ -20,11 +20,14 @@
 
 외부 interface는 깊고 작아야 한다.
 
-```text
-human request
-  → verified receipt
-  | focused material decision request
-  | typed block
+```mermaid
+flowchart LR
+    H[사람의 요청] --> O[상태 · 증거 기반 조정]
+    O --> R[검증된 receipt<br/>독립 검증 · 종료 조건]
+    O --> M[중요 결정 요청]
+    O --> B[Typed block<br/>진행 불가]
+    M --> D[사람의 결정]
+    D --> O2[조정 재개]
 ```
 
 사람은 agent 이름, phase 순서, task manifest, context 전달 방식을 직접 지정하지 않아도 된다. 오케스트레이터가 현재 state와 evidence를 기준으로 선택한다.
