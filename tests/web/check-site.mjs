@@ -31,6 +31,8 @@ if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error("source
 const index = await fs.readFile(path.join(root, "index.html"), "utf8");
 if (!index.includes("seed 7af8f714")) throw new Error("direction contract missing");
 if (/<(?:script|link)[^>]+(?:src|href)=["']https?:/i.test(index)) throw new Error("external runtime dependency found");
+if (!index.includes("data-diagram-index")) throw new Error("homepage workflow diagram index missing");
+if ((index.match(/data-diagram-link/g) || []).length !== 6) throw new Error("homepage must expose six workflow diagrams");
 
 const manifest = JSON.parse(await fs.readFile(path.join(root, "site-manifest.json"), "utf8"));
 const manifestByPath = new Map(manifest.map((item) => [item.path, item]));

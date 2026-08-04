@@ -38,14 +38,18 @@ Issue와 설계 권위 확인
 
 ## 3. 버그 진단과 수정
 
-```text
-증상 재현
-→ 관찰 사실 수집
-→ 가설 분리
-→ 가장 싼 판별 실험
-→ 근본 원인 확정
-→ 수정 계약
-→ 회귀 테스트
+```mermaid
+flowchart LR
+    S[증상 재현] --> O[관찰 사실 수집]
+    O --> H[가설 분리]
+    H --> X[가장 싼 판별 실험]
+    X -->|원인 구분| C[근본 원인 확정]
+    X -->|구분 불가| B[Blocker · 확인한 증거]
+    C --> F[수정 계약]
+    F --> T[회귀 테스트]
+    T -->|통과| D[수정 완료]
+    T -->|실패| R[Focused repair]
+    R --> F
 ```
 
 - **진입:** 증상을 재현할 수 있고 원인이 불명확하거나 여러 계층에 걸쳐 있다.
@@ -73,14 +77,15 @@ Issue와 설계 권위 확인
 
 ## 5. 독립 리뷰와 focused repair
 
-```text
-고정된 diff와 spec
-→ read-only 리뷰
-→ severity-ranked findings
-→ finding별 수정 계약
-→ 최소 수정
-→ 관련 검증 재실행
-→ 재리뷰
+```mermaid
+flowchart LR
+    D[고정된 diff · spec] --> R[Read-only 독립 review]
+    R -->|finding| F[Severity-ranked finding]
+    F --> C[Finding별 수정 계약]
+    C --> M[최소 수정]
+    M --> T[관련 검증 재실행]
+    T --> R
+    R -->|ACCEPT| A[배달 준비 완료]
 ```
 
 - **진입:** 고정된 spec과 diff가 있는 중요한 변경 또는 외부 계약.

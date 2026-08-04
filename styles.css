@@ -107,6 +107,9 @@ button, input { font: inherit; }
   color: var(--muted);
   font-size: clamp(1rem, 1.4vw, 1.18rem);
 }
+.home-diagram-link { display: inline-grid; grid-template-columns: auto auto; gap: 0.8rem; align-items: center; margin: -0.7rem 0 2rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--teal); color: var(--ink); text-decoration: none; }
+.home-diagram-link span { color: var(--muted); font-size: 0.84rem; }
+.home-diagram-link strong { color: var(--proof); font-size: 0.9rem; }
 .summary-label {
   margin: 1rem 0 0;
   color: var(--teal);
@@ -220,6 +223,39 @@ button, input { font: inherit; }
 }
 .proof-note::before { content: "×"; position: absolute; top: -1.15rem; right: 0; font: 1.6rem/1 monospace; }
 .text-link { font-weight: 650; }
+
+.diagram-index {
+  display: grid;
+  grid-template-columns: minmax(17rem, 0.72fr) minmax(30rem, 1.5fr);
+  gap: clamp(2rem, 5vw, 6rem);
+  margin-top: clamp(4rem, 8vw, 8rem);
+  padding-top: 2rem;
+  border-top: 1px solid var(--ink);
+}
+.diagram-index h2 { margin: 0 0 1rem; font-size: clamp(1.8rem, 3vw, 3rem); line-height: 1.08; letter-spacing: -0.025em; }
+.diagram-index p { max-width: 55ch; color: var(--muted); }
+.diagram-ledger { border-top: 1px solid var(--ink); }
+.diagram-ledger a {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(9rem, 0.45fr) 1fr;
+  gap: 1rem;
+  align-items: center;
+  min-height: 4.6rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+}
+.diagram-ledger a:hover { background: var(--teal-soft); }
+.diagram-ledger strong { font-size: 1.05rem; }
+.diagram-ledger span { color: var(--muted); font-size: 0.86rem; }
+.diagram-thumb { width: 8.5rem; height: 3rem; overflow: visible; }
+.diagram-thumb path,
+.diagram-thumb rect,
+.diagram-thumb circle { vector-effect: non-scaling-stroke; }
+.diagram-thumb path { fill: none; stroke: var(--teal); stroke-width: 1.5; }
+.diagram-thumb rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1; }
+.diagram-thumb circle { fill: var(--proof); stroke: none; }
 
 .alignment-explainer {
   display: grid;
@@ -382,15 +418,38 @@ button, input { font: inherit; }
   border-radius: 0;
   font: 0.84rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
 }
-.flow-diagram { margin: 2rem 0; padding: 1.2rem; overflow-x: auto; border-block: 1px solid var(--ink); background: var(--teal-soft); }
-.flow-diagram svg { display: block; min-width: 42rem; width: 100%; height: auto; }
-.flow-line { fill: none; stroke: var(--teal); stroke-width: 2; }
+.flow-diagram { position: relative; margin: 2.5rem 0; overflow: hidden; border: 1px solid var(--ink); background: var(--paper); }
+.flow-plate-head { display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: baseline; padding: 0.8rem 1rem; color: var(--paper); background: var(--ink); }
+.flow-plate-head span { color: #9ed6d5; font: 700 0.72rem/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; }
+.flow-plate-head strong { font-size: 0.9rem; font-weight: 600; }
+.flow-canvas { overflow-x: auto; padding: 1.5rem; background: linear-gradient(90deg, var(--teal-soft), transparent 42%); }
+.flow-canvas svg { display: block; min-width: 46rem; width: 100%; height: auto; }
+.flow-line { fill: none; stroke: var(--teal); stroke-width: 1.7; }
+.flow-line-branch { stroke-width: 2.6; }
+.flow-line-back { stroke: var(--proof); stroke-dasharray: 7 5; }
 .flow-line + .flow-label { paint-order: stroke; stroke: var(--paper); stroke-width: 5; stroke-linejoin: round; }
-.flow-node { display: grid; place-items: center; height: 100%; padding: 0.55rem; border: 1px solid var(--ink); color: var(--ink); background: var(--paper); font: 700 1rem/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif; text-align: center; }
+.flow-node { display: grid; align-content: center; height: 100%; padding: 0.7rem 0.75rem; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--rule); color: var(--ink); background: rgba(247, 247, 242, 0.96); text-align: left; }
+.flow-node strong { font: 750 1rem/1.25 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif; }
+.flow-node-index { margin-bottom: 0.32rem; color: var(--teal); font: 700 0.67rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.05em; }
+.flow-node-origin { background: var(--teal-soft); }
+.flow-node-decision { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+.flow-node-decision .flow-node-index { color: #9ed6d5; }
+.flow-node-merge { border-top-style: double; border-top-width: 5px; }
+.flow-node-terminal { border: 1px solid var(--ink); }
+.flow-node-proof { color: var(--proof); border-color: var(--proof); background: rgba(185, 51, 42, 0.06); }
+.flow-node-accept { border-color: var(--teal); background: var(--teal-soft); }
+.flow-node-authority { color: var(--proof); border: 1px solid var(--proof); background: var(--paper); }
 .flow-label { fill: var(--proof); font: 700 0.82rem/1 ui-monospace, monospace; text-anchor: middle; }
 .flow-diagram marker path { fill: var(--teal); }
+.flow-diagram marker .proof-arrow { fill: var(--proof); }
 .flow-mobile { display: none; }
-.flow-diagram figcaption { margin-top: 0.8rem; color: var(--muted); font-size: 0.82rem; }
+.flow-diagram figcaption { padding: 0.7rem 1rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.78rem; }
+.process-strip { display: grid; grid-template-columns: repeat(var(--step-count), minmax(9.5rem, 1fr)); min-width: calc(var(--step-count) * 9.5rem); margin: 0; padding: 2.2rem 1.4rem 1.5rem; overflow-x: auto; list-style: none; }
+.process-strip li { position: relative; min-height: 8rem; padding: 4.2rem 1rem 0.8rem 0; border-top: 1px solid var(--ink); }
+.process-strip li:not(:last-child)::after { content: ""; position: absolute; top: -0.3rem; right: 0.2rem; width: 0.55rem; height: 0.55rem; border-top: 1px solid var(--ink); border-right: 1px solid var(--ink); transform: rotate(45deg); background: var(--paper); }
+.process-number { position: absolute; top: 0.65rem; left: 0; color: var(--teal); font: 800 2.6rem/1 "SUITE Display", "Apple SD Gothic Neo", sans-serif; letter-spacing: -0.03em; }
+.process-strip strong { display: block; max-width: 14ch; font-size: 0.95rem; line-height: 1.3; }
+.process-strip small { display: block; margin-top: 0.45rem; color: var(--proof); font: 700 0.7rem/1.25 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
 .document-body code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.88em; }
 .document-body :not(pre) > code { padding: 0.12em 0.3em; background: var(--paper-deep); }
@@ -409,6 +468,7 @@ button, input { font: inherit; }
   .proof-table { grid-template-columns: 1fr 1.35fr; }
   .proof-column::after { display: none; }
   .decisions { grid-column: 1 / -1; border-top: 1px solid var(--rule); border-left: 0 !important; }
+  .diagram-index,
   .alignment-explainer { grid-template-columns: 1fr; }
   .text-equivalent { grid-column: 1; }
   .reader { grid-template-columns: minmax(13rem, 28vw) minmax(0, 1fr); }
@@ -430,7 +490,11 @@ button, input { font: inherit; }
   .checks { order: 2; }
   .decisions { order: 3; }
   .proof-column + .proof-column { border-left: 0; border-top: 1px solid var(--rule); }
+  .diagram-index,
   .alignment-explainer { margin-top: 4rem; }
+  .diagram-ledger a { grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0.8rem; }
+  .diagram-ledger a span { grid-column: 2; }
+  .diagram-thumb { width: 6.5rem; }
   .boundary-notes a { grid-template-columns: 1fr; gap: 0.2rem; }
   .reader { display: block; width: 100%; min-width: 0; }
   .reader-context { width: 100%; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; justify-content: stretch; overflow-wrap: anywhere; }
@@ -453,15 +517,21 @@ button, input { font: inherit; }
   .document-header { margin-bottom: 2.8rem; }
   .document-header h1 { font-size: clamp(2rem, 8.5vw, 2.3rem); text-wrap: wrap; word-break: break-word; }
   .document-body { word-break: break-word; }
-  .flow-diagram { margin-inline: -1rem; padding-inline: 1rem; }
-  .flow-diagram svg { display: none; }
-  .flow-mobile { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+  .flow-diagram { margin-inline: -1rem; border-inline: 0; }
+  .flow-plate-head { grid-template-columns: 1fr; gap: 0.3rem; padding-inline: 1rem; }
+  .flow-canvas { display: none; }
+  .flow-mobile { display: grid; gap: 0; margin: 0; padding: 0 1rem; list-style: none; }
   .flow-mobile li { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 0.5rem; padding: 0.65rem 0; border-top: 1px solid var(--rule); }
   .flow-mobile li:last-child { border-bottom: 1px solid var(--rule); }
   .flow-mobile-branch { padding-inline: 0.5rem !important; border-left: 1px solid var(--teal); background: var(--teal-soft); }
   .flow-mobile span,
   .flow-mobile strong { min-width: 0; overflow-wrap: anywhere; }
   .flow-mobile i { color: var(--proof); font: 700 0.75rem/1.2 ui-monospace, monospace; font-style: normal; text-align: center; }
+  .process-strip { grid-template-columns: 1fr; min-width: 0; padding: 1rem; overflow: visible; }
+  .process-strip li { min-height: 0; padding: 0.9rem 0 0.9rem 3.2rem; border-top: 1px solid var(--rule); }
+  .process-strip li:not(:last-child)::after { top: auto; right: auto; bottom: -0.3rem; left: 1rem; transform: rotate(135deg); }
+  .process-number { top: 0.8rem; font-size: 1.6rem; }
+  .process-strip strong { max-width: none; }
   .document-body h2 { margin-top: 3.8rem; }
   .recommended-navigation > p { display: grid; gap: 0.2rem; }
   .recommended-navigation > div { grid-template-columns: 1fr; gap: 0; }

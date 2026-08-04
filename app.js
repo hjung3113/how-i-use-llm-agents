@@ -115,65 +115,90 @@
     const edges = lines.slice(1).map((line) => line.trim().match(/^(\w+)(?:\[[^\]]+\])?\s*-->\s*(?:\|([^|]+)\|\s*)?(\w+)(?:\[[^\]]+\])?$/)).filter(Boolean);
     if (!edges.length) return "";
     const ids = [...new Set(edges.flatMap((edge) => [edge[1], edge[3]]))];
-    const hub = ids.find((id) => edges.filter((edge) => edge[3] === id).length >= 3);
-    const branch = ids.find((id) => edges.filter((edge) => edge[1] === id).length >= 3);
-    const columns = Math.min(4, ids.length);
-    const nodeWidth = 170;
-    const nodeHeight = 80;
+    const outgoing = new Map(ids.map((id) => [id, edges.filter((edge) => edge[1] === id)]));
+    const incoming = new Map(ids.map((id) => [id, edges.filter((edge) => edge[3] === id)]));
+    const nodeText = (id) => (labels.get(id) || id).replace(/<br\s*\/?\s*>/gi, " · ");
+    const nodeLabel = (id) => escapeHtml(nodeText(id));
+    const root = ids.find((id) => incoming.get(id).length === 0) || ids[0];
+    const linear = edges.length === ids.length - 1 && ids.every((id) => outgoing.get(id).length <= 1 && incoming.get(id).length <= 1);
+    const figureNumber = ++diagramCount;
+    const titleId = `flow-title-${figureNumber}`;
+
+    if (linear) {
+      const ordered = [];
+      let current = root;
+      while (current && !ordered.includes(current)) {
+        ordered.push(current);
+        current = outgoing.get(current)[0]?.[3];
+      }
+      const summary = `${nodeLabel(ordered[0])}에서 ${nodeLabel(ordered.at(-1))}까지 ${ordered.length}단계로 진행합니다.`;
+      const steps = ordered.map((id, index) => {
+        const handoff = outgoing.get(id)[0]?.[2];
+        return `<li><span class="process-number">${String(index + 1).padStart(2, "0")}</span><strong>${nodeLabel(id)}</strong>${handoff ? `<small>${escapeHtml(handoff)}</small>` : ""}</li>`;
+      }).join("");
+      return `<figure class="flow-diagram flow-diagram-linear" aria-label="문서 흐름도">
+        <header class="flow-plate-head"><span>PROCESS PLATE · ${String(figureNumber).padStart(2, "0")}</span><strong>${ordered.length}단계 실행 흐름</strong></header>
+        <ol class="process-strip" style="--step-count:${ordered.length}" aria-labelledby="${titleId}">${steps}</ol>
+        <figcaption id="${titleId}">${summary}</figcaption>
+      </figure>`;
+    }
+
+    const adjacency = new Map(ids.map((id) => [id, outgoing.get(id).map((edge) => edge[3])]));
+    const visiting = new Set();
+    const visited = new Set();
+    const backEdges = new Set();
+    function markBackEdges(id) {
+      if (visited.has(id)) return;
+      visiting.add(id);
+      for (const target of adjacency.get(id)) {
+        if (visiting.has(target)) backEdges.add(`${id}:${target}`);
+        else markBackEdges(target);
+      }
+      visiting.delete(id);
+      visited.add(id);
+    }
+    markBackEdges(root);
+    for (const id of ids) markBackEdges(id);
+
+    const forwardEdges = edges.filter((edge) => !backEdges.has(`${edge[1]}:${edge[3]}`));
+    const forwardIncoming = new Map(ids.map((id) => [id, forwardEdges.filter((edge) => edge[3] === id).length]));
+    const levels = new Map(ids.map((id) => [id, 0]));
+    const ready = ids.filter((id) => forwardIncoming.get(id) === 0);
+    while (ready.length) {
+      const id = ready.shift();
+      for (const edge of forwardEdges.filter((item) => item[1] === id)) {
+        levels.set(edge[3], Math.max(levels.get(edge[3]), levels.get(id) + 1));
+        forwardIncoming.set(edge[3], forwardIncoming.get(edge[3]) - 1);
+        if (forwardIncoming.get(edge[3]) === 0) ready.push(edge[3]);
+      }
+    }
+
+    const groups = new Map();
+    for (const id of ids) {
+      const level = levels.get(id);
+      if (!groups.has(level)) groups.set(level, []);
+      groups.get(level).push(id);
+    }
+    const maxLevel = Math.max(...groups.keys());
+    const nodeWidth = 180;
+    const nodeHeight = 88;
     const width = 920;
-    const gapX = columns > 1 ? (width - 80 - nodeWidth) / (columns - 1) : 0;
-    const rows = Math.ceil(ids.length / columns);
-    let height = rows * 150 + 40;
-    let points;
-    let hubSources = [];
-    let hubAdapters = [];
-    if (branch) {
-      const outgoing = new Map(ids.map((id) => [id, edges.filter((edge) => edge[1] === id).map((edge) => edge[3])]));
-      const root = ids.find((id) => !edges.some((edge) => edge[3] === id)) || ids[0];
-      const levels = new Map([[root, 0]]);
-      const queue = [root];
-      while (queue.length) {
-        const id = queue.shift();
-        for (const target of outgoing.get(id)) {
-          if (levels.has(target)) continue;
-          levels.set(target, levels.get(id) + 1);
-          queue.push(target);
-        }
-      }
-      const maxKnown = Math.max(...levels.values());
-      for (const id of ids) if (!levels.has(id)) levels.set(id, maxKnown + 1);
-      const groups = new Map();
-      for (const id of ids) {
-        const level = levels.get(id);
-        if (!groups.has(level)) groups.set(level, []);
-        groups.get(level).push(id);
-      }
-      const maxLevel = Math.max(...groups.keys());
-      height = maxLevel * 124 + nodeHeight + 80;
-      points = new Map();
-      for (const [level, group] of groups) {
-        const usable = width - nodeWidth - 80;
-        group.forEach((id, index) => points.set(id, {
-          x: 40 + (group.length === 1 ? usable / 2 : index * usable / (group.length - 1)),
-          y: 40 + level * 124
-        }));
-      }
-    } else if (hub) {
-      hubSources = [...new Set(edges.filter((edge) => edge[3] === hub).map((edge) => edge[1]))];
-      hubAdapters = ids.filter((id) => id !== hub && !hubSources.includes(id));
-      const sources = [...hubAdapters, ...hubSources];
-      height = Math.max(340, sources.length * 82 + 40);
-      points = new Map(sources.map((id, index) => [id, { x: 50, y: 20 + index * 82 }]));
-      points.set(hub, { x: 700, y: (height - nodeHeight) / 2 });
-    } else {
-      points = new Map(ids.map((id, index) => {
-        const row = Math.floor(index / columns);
-        const slot = index % columns;
-        const column = row % 2 ? columns - slot - 1 : slot;
-        return [id, { x: 40 + column * gapX, y: 40 + row * 150 }];
+    const height = maxLevel * 132 + nodeHeight + 80;
+    const points = new Map();
+    for (const [level, group] of groups) {
+      const usable = width - nodeWidth - 80;
+      group.forEach((id, index) => points.set(id, {
+        x: 40 + (group.length === 1 ? usable / 2 : index * usable / (group.length - 1)),
+        y: 40 + level * 132
       }));
     }
-    const reverse = new Set(edges.map((edge) => `${edge[1]}:${edge[3]}`));
+
+    const split = ids.find((id) => outgoing.get(id).length >= 2);
+    const merge = ids.find((id) => incoming.get(id).length >= 2);
+    const allLabels = ids.map(nodeText).join(" ");
+    const plateType = /증상 재현|근본 원인/.test(allLabels) ? "DIAGNOSIS LOOP" : backEdges.size ? "REVIEW LOOP" : split && merge ? "DEPENDENCY MAP" : split ? "DECISION MAP" : "EVIDENCE MAP";
+    const arrowId = `flow-arrow-${figureNumber}`;
+    const proofArrowId = `flow-proof-arrow-${figureNumber}`;
     const paths = edges.map((edge) => {
       const from = points.get(edge[1]);
       const to = points.get(edge[3]);
@@ -188,44 +213,45 @@
       const y1 = fromY + dy * boundary;
       const x2 = toX - dx * boundary;
       const y2 = toY - dy * boundary;
-      const paired = reverse.has(`${edge[3]}:${edge[1]}`);
-      const longJump = !branch && Math.abs(dx) > gapX * 1.5 && Math.abs(dy) < 10;
-      const bend = longJump ? 58 : paired ? (edge[1] < edge[3] ? -28 : 28) : 0;
       const mx = (x1 + x2) / 2;
-      const my = (y1 + y2) / 2 + bend;
-      const controlX = branch && to.y < from.y ? Math.max(20, Math.min(x1, x2) - 120) : mx;
-      const controlY = branch && to.y < from.y ? (y1 + y2) / 2 : my;
-      const label = edge[2] ? `<text class="flow-label" x="${controlX}" y="${controlY - 8}">${escapeHtml(edge[2])} → ${escapeHtml((labels.get(edge[3]) || edge[3]).replace(/<br\s*\/?\s*>/gi, " · "))}</text>` : "";
-      return `<path class="flow-line" d="M ${x1} ${y1} Q ${controlX} ${controlY} ${x2} ${y2}" marker-end="url(#flow-arrow)"/>${label}`;
+      const my = (y1 + y2) / 2;
+      const returning = backEdges.has(`${edge[1]}:${edge[3]}`);
+      const controlX = returning ? Math.max(18, Math.min(x1, x2) - 150) : mx;
+      const controlY = my;
+      const label = edge[2] ? `<text class="flow-label" x="${controlX}" y="${controlY - 8}">${escapeHtml(edge[2])}</text>` : "";
+      const kind = returning ? " flow-line-back" : edge[1] === split ? " flow-line-branch" : "";
+      return `<path class="flow-line${kind}" d="M ${x1} ${y1} Q ${controlX} ${controlY} ${x2} ${y2}" marker-end="url(#${returning ? proofArrowId : arrowId})"/>${label}`;
     }).join("");
-    const nodes = ids.map((id) => {
+    const nodes = ids.map((id, index) => {
       const point = points.get(id);
-      const label = escapeHtml((labels.get(id) || id).replace(/<br\s*\/?\s*>/gi, " · "));
-      return `<foreignObject x="${point.x}" y="${point.y}" width="${nodeWidth}" height="${nodeHeight}"><div xmlns="http://www.w3.org/1999/xhtml" class="flow-node">${label}</div></foreignObject>`;
+      const raw = nodeText(id);
+      const classes = ["flow-node"];
+      let kind = "STEP";
+      if (id === root) { classes.push("flow-node-origin"); kind = "ENTRY"; }
+      if (outgoing.get(id).length >= 2) { classes.push("flow-node-decision"); kind = "GATE"; }
+      if (incoming.get(id).length >= 2) { classes.push("flow-node-merge"); kind = "MERGE"; }
+      if (outgoing.get(id).length === 0) { classes.push("flow-node-terminal"); kind = "OUTCOME"; }
+      if (/REVISE|REJECT|실패|Blocked|Blocker|finding|repair/i.test(raw)) classes.push("flow-node-proof");
+      if (/ACCEPT|완료|receipt|통과/i.test(raw)) classes.push("flow-node-accept");
+      if (/사람의 결정|중요 결정/i.test(raw)) { classes.push("flow-node-authority"); kind = "HUMAN"; }
+      return `<foreignObject x="${point.x}" y="${point.y}" width="${nodeWidth}" height="${nodeHeight}"><div xmlns="http://www.w3.org/1999/xhtml" class="${classes.join(" ")}"><span class="flow-node-index">${String(index + 1).padStart(2, "0")} · ${kind}</span><strong>${escapeHtml(raw)}</strong></div></foreignObject>`;
     }).join("");
-    const nodeLabel = (id) => escapeHtml((labels.get(id) || id).replace(/<br\s*\/?\s*>/gi, " · "));
     const text = edges.map((edge) => `${nodeLabel(edge[1])} → ${edge[2] ? `${escapeHtml(edge[2])}: ` : ""}${nodeLabel(edge[3])}`).join("; ");
-    const adapterSummary = hubAdapters.map((id) => {
-      const target = edges.find((edge) => edge[1] === id)?.[3];
-      return `${nodeLabel(id)} → ${nodeLabel(target)} 경유.`;
-    }).join(" ");
-    const branchTargetIds = branch ? edges.filter((edge) => edge[1] === branch).map((edge) => edge[3]) : [];
+    const branchTargetIds = split ? outgoing.get(split).map((edge) => edge[3]) : [];
     const branchTargets = branchTargetIds.map(nodeLabel);
-    const branchReturns = branch ? edges.filter((edge) => branchTargetIds.includes(edge[1]) && ids.indexOf(edge[3]) < ids.indexOf(edge[1])) : [];
-    const returnSummary = branchReturns.map((edge) => `${nodeLabel(edge[1])}는 ${nodeLabel(edge[3])}로 돌아갑니다.`).join(" ");
-    const summary = branch
-      ? `${nodeLabel(branch)} 다음에는 ${branchTargets.join(", ")}의 ${branchTargets.length}개 경로가 있습니다.${returnSummary ? ` ${returnSummary}` : ""}`
-      : hub
-      ? `${hubSources.length}개의 정보원이 ${nodeLabel(hub)}에 직접 연결됩니다.${adapterSummary ? ` ${adapterSummary}` : ""}`
-      : edges.some((edge) => reverse.has(`${edge[3]}:${edge[1]}`))
-        ? "목표에서 구현과 검증으로 진행하고, 실패하면 집중 수정 후 다시 검증합니다."
-        : `${nodeLabel(ids[0])}에서 ${nodeLabel(ids.at(-1))}까지 화살표를 따라 진행합니다.`;
-    const mobileEdges = edges.map((edge) => `<li${edge[1] === branch ? ` class="flow-mobile-branch" aria-label="${nodeLabel(branch)}에서 갈라지는 경로"` : ""}><span>${nodeLabel(edge[1])}</span><i>${edge[2] ? `${escapeHtml(edge[2])} →` : "→"}</i><strong>${nodeLabel(edge[3])}</strong></li>`).join("");
-    const titleId = `flow-title-${++diagramCount}`;
+    const returnSummary = [...backEdges].map((key) => {
+      const [from, to] = key.split(":");
+      return `${nodeLabel(from)}에서 ${nodeLabel(to)}로 되돌아가는 회귀 경로입니다.`;
+    }).join(" ");
+    const summary = split
+      ? `${nodeLabel(split)} 다음에는 ${branchTargets.join(", ")}의 ${branchTargets.length}개 경로가 있습니다.${returnSummary ? ` ${returnSummary}` : ""}`
+      : `${nodeLabel(root)}에서 시작해 연결된 증거와 결과를 확인합니다.${returnSummary ? ` ${returnSummary}` : ""}`;
+    const mobileEdges = edges.map((edge) => `<li${edge[1] === split ? ` class="flow-mobile-branch" aria-label="${nodeLabel(split)}에서 갈라지는 경로"` : ""}><span>${nodeLabel(edge[1])}</span><i>${edge[2] ? `${escapeHtml(edge[2])} →` : "→"}</i><strong>${nodeLabel(edge[3])}</strong></li>`).join("");
     return `<figure class="flow-diagram" aria-label="문서 흐름도">
-      <svg viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="${titleId}"><title id="${titleId}">${summary}</title><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"/></marker></defs>${paths}${nodes}</svg>
+      <header class="flow-plate-head"><span>${plateType} · ${String(figureNumber).padStart(2, "0")}</span><strong>${summary}</strong></header>
+      <div class="flow-canvas"><svg viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="${titleId}"><title id="${titleId}">${summary}</title><defs><marker id="${arrowId}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"/></marker><marker id="${proofArrowId}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="proof-arrow" d="M 0 0 L 10 5 L 0 10 z"/></marker></defs>${paths}${nodes}</svg></div>
       <ol class="flow-mobile" aria-label="모바일용 흐름">${mobileEdges}</ol>
-      <figcaption><span class="visually-hidden">${text}</span><span>${summary}</span></figcaption>
+      <figcaption><span class="visually-hidden">${text}</span><span>실선은 실행, 붉은 점선은 수정 후 재진입을 뜻합니다.</span></figcaption>
     </figure>`;
   }
 

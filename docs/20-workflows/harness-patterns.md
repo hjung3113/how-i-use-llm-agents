@@ -74,11 +74,20 @@ flowchart LR
 
 여러 작업을 의존성 그래프로 나누고, 서로 충돌하지 않는 lane만 격리 worktree에서 병렬 실행한다.
 
-```text
-Baseline
- ├─ Lane A: 구현 → 리뷰 ─┐
- ├─ Lane B: 구현 → 리뷰 ─┼→ 순차 merge → 공유 smoke
- └─ Lane C: A 이후 실행 ─┘
+```mermaid
+flowchart LR
+    B[Baseline] --> A1[Lane A · 구현]
+    B --> B1[Lane B · 구현]
+    A1 --> A2[Lane A · 독립 review]
+    B1 --> B2[Lane B · 독립 review]
+    A2 --> C1[Lane C · A 이후 구현]
+    C1 --> C2[Lane C · 독립 review]
+    A2 --> M[최신 main에 순차 merge]
+    B2 --> M
+    C2 --> M
+    M --> S[공유 smoke · CI]
+    S -->|통과| D[통합 완료]
+    S -->|실패| X[Blocked lane · owner 기록]
 ```
 
 각 lane은 다음을 소유한다.
