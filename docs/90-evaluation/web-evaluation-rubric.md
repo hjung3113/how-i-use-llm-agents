@@ -125,6 +125,12 @@ live Git/runtime state와 질문별 authority 확인
 
 사전에 고정할 neutral mission은 “이 페이지를 처음 본 역할 사용자로서 자유롭게 탐색한 뒤, 저자가 LLM agent를 실제로 사용하는 순서와 복잡도를 바꾸는 조건, 사람에게 남는 권한을 동료에게 설명하라. 역할에 중요한 두 사례도 찾아라.”이다. 구체적인 정답 용어와 경로는 prompt에 주지 않는다.
 
+첫 자유 설명 뒤에는 더 탐색하지 않은 상태에서 다음 **고정 2차 open-response probe**를 한 번만 보낸다. 이는 정의나 정답 관계를 알려 주는 힌트가 아니라, 자유 설명에서 선택되지 않은 이해 차원을 동일하게 회수하기 위한 질문이다.
+
+> 추가로 페이지를 탐색하지 말고 자신의 말로 설명을 완성하라. 입문 개발자: 왜 한 agent로 시작하는지, 왜 evidence가 필요한지, 무엇을 먼저 읽거나 시도할지 설명하라. 실무 개발자: HANDOFF와 MEMORY, Verified Result와 Applied Result를 구분하고 설계 review/grilling의 목적을 설명하라. PM/창업자: meta-prompting이 실행과 어떤 관계인지, 현재 product/design authority와 delivery-plan/roadmap history가 어떻게 다른지, 어떤 결정이 사람에게 남는지 설명하라. 실무 개발자와 PM/창업자: scenario를 처음부터 끝까지 적용해 어떤 기준이 용어를 지배하는지, 충돌을 어떻게 드러내는지, 누가 결정하는지, 어디에 기록하는지, 무엇을 다시 확인하는지, alignment를 언제 끝내거나 의도적으로 생략하는지 설명하라.
+
+자유 설명에서 언급되지 않은 항목은 곧바로 `FAIL`이 아니라 `UNELICITED`로 기록한다. 고정 probe 뒤에도 각 항목을 정확히 설명해야 최종 PASS다. 질문이 평가 대상을 이름 붙이는 것은 이해를 회수하는 것이며, 그 정의·필수 관계·임계값·정답 선택지·문서 경로를 제공하면 정답 오염이다.
+
 실무 개발자와 PM/창업자에게는 평가 corpus 밖의 `tests/web/blind-design-scenario.txt`에 사전 등록한 unseen transfer scenario를 함께 준다. 이 파일의 digest를 Luna evidence bundle에 기록하되 내용은 웹에 노출하지 않는다. 평가 문서와 source 문구도 보여주지 않는다.
 
 다음 여섯 proposition을 scenario에 적용해야 설계 정렬 항목 PASS다.
