@@ -9,6 +9,7 @@
   const ledger = document.querySelector("#source-ledger");
   const outline = document.querySelector("#local-outline");
   const menu = document.querySelector(".menu-button");
+  const mobileLedger = matchMedia("(max-width: 680px)");
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
   function escapeHtml(value) {
@@ -199,13 +200,55 @@
       </details>`).join("");
   }
 
+  function recommendedReading() {
+    const readme = byPath.get("README.md");
+    if (!readme) return [];
+    const section = readme.raw.split(/^## 권장 학습 경로\s*$/m)[1]?.split(/^##\s/m)[0] || "";
+    const result = [];
+    let phase = "";
+    for (const line of section.split("\n")) {
+      const heading = line.match(/^###\s+(.+)/);
+      if (heading) phase = heading[1].trim();
+      for (const link of line.matchAll(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g)) {
+        const [targetPath, targetAnchor] = link[2].split("#");
+        const path = targetPath ? resolvePath("README.md", targetPath) : "README.md";
+        if (!byPath.has(path)) continue;
+        result.push({ path, heading: targetAnchor ? slug(decodeURIComponent(targetAnchor)) : "", label: link[1], phase });
+      }
+    }
+    return result;
+  }
+
+  const recommended = recommendedReading();
+
+  function recommendedNavigation(path) {
+    const index = recommended.findIndex((item) => item.path === path);
+    if (index < 0) return "";
+    const link = (item, direction) => item ? `<a class="recommended-link ${direction}" href="#/${item.path}${item.heading ? `/${item.heading}` : ""}"><small>${direction === "previous" ? "이전 권장 문서" : "다음 권장 문서"}</small><span>${escapeHtml(item.label)}</span></a>` : "";
+    return `<nav class="recommended-navigation" aria-label="권장 학습 경로">
+      <p><span>README 권장 경로</span>${escapeHtml(recommended[index].phase)} · ${index + 1}/${recommended.length}</p>
+      <div>${link(recommended[index - 1], "previous")}${link(recommended[index + 1], "next")}</div>
+    </nav>`;
+  }
+
+  function setLedgerOpen(open) {
+    const visible = mobileLedger.matches && open;
+    ledger.dataset.open = String(visible);
+    ledger.hidden = mobileLedger.matches && !visible;
+    ledger.toggleAttribute("inert", mobileLedger.matches && !visible);
+    menu.setAttribute("aria-expanded", String(visible));
+    if (!home.hidden) {
+      reader.hidden = !visible;
+      reader.classList.toggle("ledger-only", visible);
+    }
+  }
+
   function showHome() {
     home.hidden = false;
     reader.hidden = true;
     reader.classList.remove("ledger-only");
     document.title = "How I Use LLM Agents";
-    menu.setAttribute("aria-expanded", "false");
-    ledger.dataset.open = "false";
+    setLedgerOpen(false);
     requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, 0)));
   }
 
@@ -222,7 +265,8 @@
         <h1>${escapeHtml(title)}</h1>
         <div class="source-actions"><a href="${doc.path}">원본 Markdown</a><a href="https://github.com/hjung3113/how-i-use-llm-agents/blob/main/${doc.path}">GitHub에서 보기</a><a href="#/home">읽기 지도로 돌아가기</a></div>
       </header>
-      <div class="document-body" data-source-path="${doc.path}">${body}</div>`;
+      <div class="document-body" data-source-path="${doc.path}">${body}</div>
+      ${recommendedNavigation(doc.path)}`;
     const local = rendered.headings.filter((item) => item.level >= 2 && item.level <= 3);
     outline.innerHTML = `<h2>이 문서의 목차</h2><ol>${local.map((item) => `<li class="level-${item.level}"><a href="#/${doc.path}/${item.id}">${escapeHtml(item.label)}</a></li>`).join("")}</ol>`;
     document.querySelectorAll(".source-ledger [aria-current]").forEach((item) => item.removeAttribute("aria-current"));
@@ -232,8 +276,7 @@
     reader.hidden = false;
     reader.classList.remove("ledger-only");
     document.title = `${title} · How I Use LLM Agents`;
-    menu.setAttribute("aria-expanded", "false");
-    ledger.dataset.open = "false";
+    setLedgerOpen(false);
     requestAnimationFrame(() => requestAnimationFrame(() => {
       const target = headingId && document.getElementById(headingId);
       if (target) target.scrollIntoView();
@@ -249,15 +292,25 @@
 
   menu.addEventListener("click", () => {
     const open = ledger.dataset.open !== "true";
-    if (!home.hidden) {
-      reader.hidden = !open;
-      reader.classList.toggle("ledger-only", open);
-    }
-    ledger.dataset.open = String(open);
-    menu.setAttribute("aria-expanded", String(open));
+    setLedgerOpen(open);
+    if (open) requestAnimationFrame(() => ledger.querySelector("summary, a")?.focus());
   });
   ledger.addEventListener("click", (event) => {
-    if (event.target.closest("a")) ledger.dataset.open = "false";
+    if (event.target.closest("a")) {
+      setLedgerOpen(false);
+      menu.focus();
+    }
+  });
+  addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && ledger.dataset.open === "true") {
+      setLedgerOpen(false);
+      menu.focus();
+    }
+  });
+  mobileLedger.addEventListener("change", () => {
+    const returnFocus = ledger.contains(document.activeElement);
+    setLedgerOpen(false);
+    if (returnFocus) menu.focus();
   });
 
   buildLedger();

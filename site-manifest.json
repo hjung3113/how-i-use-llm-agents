@@ -597,7 +597,7 @@
   },
   {
     "path": "docs/20-workflows/design-alignment.md",
-    "bytes": 10086,
+    "bytes": 10087,
     "headings": [
       {
         "level": 1,
@@ -1075,7 +1075,7 @@
   },
   {
     "path": "docs/90-evaluation/evaluation-result.md",
-    "bytes": 2390,
+    "bytes": 2812,
     "headings": [
       {
         "level": 1,
@@ -1091,11 +1091,11 @@
       },
       {
         "level": 2,
-        "text": "독립 Sol High 리뷰"
+        "text": "UI와 접근성"
       },
       {
         "level": 2,
-        "text": "현재 Gate 상태"
+        "text": "완료 판단"
       }
     ]
   },
@@ -1225,7 +1225,7 @@
   },
   {
     "path": "docs/90-evaluation/web-evaluation-rubric.md",
-    "bytes": 22232,
+    "bytes": 22487,
     "headings": [
       {
         "level": 1,

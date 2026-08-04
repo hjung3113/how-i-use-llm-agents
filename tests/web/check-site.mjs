@@ -35,7 +35,16 @@ if (/<(?:script|link)[^>]+(?:src|href)=["']https?:/i.test(index)) throw new Erro
 const manifest = JSON.parse(await fs.readFile(path.join(root, "site-manifest.json"), "utf8"));
 const manifestByPath = new Map(manifest.map((item) => [item.path, item]));
 const navigation = [];
-const slug = (value) => value.toLowerCase().trim().replace(/[\s/]+/g, "-").replace(/[^\p{L}\p{N}._-]/gu, "").replace(/-+/g, "-").replace(/^-|-$/g, "") || "section";
+const slug = (value) => value.toLowerCase().trim().replace(/<[^>]+>/g, "").replace(/[\s/]+/g, "-").replace(/[^\p{L}\p{N}._-]/gu, "").replace(/-+/g, "-").replace(/^-|-$/g, "") || "section";
+const headingIds = (entry) => {
+  const used = new Map();
+  return new Set(entry.headings.map((heading) => {
+    const base = slug(heading.text);
+    const count = used.get(base) || 0;
+    used.set(base, count + 1);
+    return count ? `${base}-${count + 1}` : base;
+  }));
+};
 for (const doc of docs) {
   const raw = await fs.readFile(path.join(root, doc.path), "utf8");
   if (doc.raw !== raw) throw new Error(`payload mismatch: ${doc.path}`);
@@ -52,11 +61,15 @@ for (const doc of docs) {
   });
 
   for (const match of raw.matchAll(/\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g)) {
-    const target = match[1].split("#")[0];
-    if (!target || /^(?:[a-z]+:|\/)/i.test(target) || !target.endsWith(".md")) continue;
-    const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(doc.path), decodeURIComponent(target)));
-    try { await fs.access(path.join(root, resolved)); }
-    catch { throw new Error(`broken Markdown link: ${doc.path} -> ${target}`); }
+    const [target, anchor] = match[1].split("#");
+    if (/^(?:[a-z]+:|\/)/i.test(target)) continue;
+    if (target && !target.endsWith(".md")) continue;
+    const resolved = target ? path.posix.normalize(path.posix.join(path.posix.dirname(doc.path), decodeURIComponent(target))) : doc.path;
+    const targetEntry = manifestByPath.get(resolved);
+    if (!targetEntry) throw new Error(`broken Markdown link: ${doc.path} -> ${match[1]}`);
+    if (anchor && !headingIds(targetEntry).has(slug(decodeURIComponent(anchor)))) {
+      throw new Error(`broken Markdown anchor: ${doc.path} -> ${match[1]}`);
+    }
   }
 }
 

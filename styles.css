@@ -106,6 +106,11 @@ button, input { font: inherit; }
   color: var(--muted);
   font-size: clamp(1rem, 1.4vw, 1.18rem);
 }
+.summary-label {
+  margin: 1rem 0 0;
+  color: var(--teal);
+  font: 600 0.76rem/1.4 ui-monospace, monospace;
+}
 
 .proof-table {
   position: relative;
@@ -283,6 +288,7 @@ button, input { font: inherit; }
   padding: 1.4rem 1rem 3rem;
 }
 .source-ledger { border-right: 1px solid var(--rule); }
+.source-ledger[hidden] { display: none; }
 .local-outline { border-left: 1px solid var(--rule); }
 .source-ledger h2,
 .local-outline h2 { margin: 0 0 1rem; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.07em; }
@@ -305,6 +311,7 @@ button, input { font: inherit; }
 .local-outline .level-3 { padding-left: 0.8rem; }
 
 .document {
+  box-sizing: border-box;
   min-width: 0;
   max-width: calc(var(--measure) + 8rem);
   width: 100%;
@@ -313,10 +320,39 @@ button, input { font: inherit; }
 }
 .document-header { margin-bottom: 4rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--ink); }
 .source-path { margin: 0 0 0.8rem; color: var(--teal); font: 0.78rem/1.4 ui-monospace, monospace; overflow-wrap: anywhere; }
-.document-header h1 { margin: 0; font-size: clamp(2.4rem, 5vw, 4.8rem); line-height: 0.98; letter-spacing: -0.035em; text-wrap: balance; }
+.document-header h1 { margin: 0; font-size: clamp(2.4rem, 5vw, 4.8rem); line-height: 0.98; letter-spacing: -0.035em; text-wrap: balance; overflow-wrap: anywhere; }
 .source-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.2rem; font-size: 0.84rem; }
+.source-actions a { overflow-wrap: anywhere; }
 
-.document-body { max-width: var(--measure); }
+.recommended-navigation {
+  max-width: var(--measure);
+  margin-top: 5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ink);
+}
+.recommended-navigation > p {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.recommended-navigation > p span { color: var(--teal); font: 600 0.76rem/1.4 ui-monospace, monospace; }
+.recommended-navigation > div { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.recommended-link {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--rule);
+  text-decoration: none;
+}
+.recommended-link.next { grid-column: 2; text-align: right; }
+.recommended-link small { color: var(--muted); }
+.recommended-link span { font-weight: 700; overflow-wrap: anywhere; }
+
+.document-body { min-width: 0; max-width: var(--measure); overflow-wrap: anywhere; }
 .document-body h2,
 .document-body h3,
 .document-body h4 { scroll-margin-top: calc(var(--masthead) + 1.5rem); line-height: 1.2; text-wrap: balance; }
@@ -363,6 +399,7 @@ button, input { font: inherit; }
 
 @media (max-width: 680px) {
   :root { --masthead: 3.25rem; }
+  html, body { max-width: 100%; overflow-x: hidden; }
   .masthead { gap: 0.5rem; padding-inline: 0.8rem; }
   .wordmark { font-size: 1rem; }
   .masthead-actions a { display: none; }
@@ -376,8 +413,8 @@ button, input { font: inherit; }
   .proof-column + .proof-column { border-left: 0; border-top: 1px solid var(--rule); }
   .alignment-explainer { margin-top: 4rem; }
   .boundary-notes a { grid-template-columns: 1fr; gap: 0.2rem; }
-  .reader { display: block; }
-  .reader-context { display: grid; grid-template-columns: 1fr auto; justify-content: stretch; }
+  .reader { display: block; width: 100%; min-width: 0; }
+  .reader-context { width: 100%; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; justify-content: stretch; overflow-wrap: anywhere; }
   .reader-context span { grid-column: 1; }
   .reader-context i { grid-column: 2; grid-row: auto; }
   .source-ledger {
@@ -393,9 +430,14 @@ button, input { font: inherit; }
     background: var(--paper);
   }
   .source-ledger[data-open="true"] { transform: translateX(0); }
-  .document { padding: 2.5rem 1rem 6rem; }
+  .document { width: 100%; max-width: 100%; min-width: 0; padding: 2.5rem 1rem 6rem; }
   .document-header { margin-bottom: 2.8rem; }
+  .document-header h1 { font-size: clamp(2.1rem, 10vw, 2.6rem); text-wrap: wrap; word-break: break-word; }
+  .document-body { word-break: break-word; }
   .document-body h2 { margin-top: 3.8rem; }
+  .recommended-navigation > p { display: grid; gap: 0.2rem; }
+  .recommended-navigation > div { grid-template-columns: 1fr; gap: 0; }
+  .recommended-link.next { grid-column: 1; text-align: left; }
 }
 
 @media (prefers-reduced-motion: reduce) {

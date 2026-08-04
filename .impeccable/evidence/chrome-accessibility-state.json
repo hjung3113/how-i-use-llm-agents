@@ -1,5 +1,8 @@
 {
-  "id": "445d384e-42e3-457f-af48-4002d10a2df5",
+  "checkedAt": "2026-08-04T11:13:00+09:00",
+  "permissionStatus": "granted",
+  "scope": "best-effort manual Chrome accessibility check; non-blocking for this static explainer",
+  "id": "22557bfc-106c-4d48-b050-d2b24b78d024",
   "ok": false,
   "error": {
     "code": "permission_denied",

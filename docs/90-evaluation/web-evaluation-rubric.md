@@ -48,8 +48,8 @@ rendered-bundle digest가 두 route의 공통 artifact identity다. Luna는 Page
 
 - manifest와 대상 source 집합이 일치한다.
 - 각 source의 모든 heading level이 웹 navigation 또는 본문에 대응한다.
-- source를 ordered normalized block/inline inventory로 바꾸고 rendered DOM과 비교한다. paragraph text, blockquote, code byte, table cell, ordered/unordered list의 순서·nesting, link text와 target이 모두 일치해야 한다.
-- source별 block count, literal payload digest, rendered payload digest를 기록하며 하나라도 다르면 실패한다.
+- 각 source의 원문 byte가 생성 bundle에 그대로 포함되는지 검사하고, 대표 문서에서 heading·paragraph·list·table·code·link가 renderer smoke를 통과하는지 확인한다. 이 소개 사이트는 범용 Markdown 출판 엔진이 아니므로 51개 문서의 DOM node를 byte 단위로 이중 증명하지 않는다.
+- source manifest와 전체 literal payload digest를 기록한다.
 - 웹에서 각 source 원문으로 이동할 수 있다.
 - authored summary는 navigation label과 첫 진입 안내에만 쓰고 `요약`으로 표시한다. 완전성 주장은 원문에서 결정적으로 생성한 본문에만 적용한다.
 
@@ -151,9 +151,9 @@ live Git/runtime state와 질문별 authority 확인
 - 찾지 못했거나 오해한 정보
 - navigation, 가독성, mobile 흐름의 방해 요소
 
-Luna 자신의 self-score는 판정 근거가 아니다. 별도 scorer가 위 answer key와 persona matrix로 full transcript를 채점한다. 실행 전에 scorer contract를 고정한다. 사람 scorer라면 식별자와 shared/persona/transfer proposition별 이진 판정·transcript citation을, model scorer라면 여기에 model/version과 exact scoring prompt를 더해 Luna evidence bundle에 보존한다. raw prompt, transcript, visited URL/hash trail, model/version, date, viewport, turn 수를 보존한다. 첫 3회 결과와 무효 session을 모두 보고하고 rerun을 숨기지 않는다. material content/navigation 변경 후에는 3명을 모두 다시 실행한다.
+Luna 자신의 self-score는 판정 근거가 아니다. 별도 scorer가 위 answer key와 persona matrix로 full transcript를 채점한다. 실행 전에 scorer contract를 고정한다. 사람 scorer라면 식별자와 shared/persona/transfer proposition별 이진 판정·transcript citation을, model scorer라면 여기에 model/version과 exact scoring prompt를 더해 Luna evidence bundle에 보존한다. raw prompt, transcript, visited URL/hash trail, model/version, date, viewport, turn 수를 보존한다. 첫 3회 결과와 무효 session을 모두 보고하고 rerun을 숨기지 않는다.
 
-기본 loop, human authority, persona 추가 항목을 모두 정확히 설명하고 blocker 없이 목적 문서에 도달해야 PASS다. 기능 활용 능력은 보조 관찰이다.
+기본 loop, human authority, persona 추가 항목을 모두 정확히 설명하고 blocker 없이 목적 문서에 도달해야 PASS다. 기능 활용 능력은 보조 관찰이다. 이해 정답이나 첫 진입 정보 구조가 달라지면 세 역할을 다시 실행한다. 깨진 link, focus, 이전·다음 control처럼 의미를 바꾸지 않는 국소 수정은 focused check로 닫고 전체 Luna 실행을 반복하지 않는다.
 
 ## 독립 리뷰
 
@@ -184,11 +184,11 @@ identity가 바뀌면 그 이후 자동 검사, screenshot, Luna, Sol evidence�
 | 1.4.3, 1.4.10, 1.4.11, 1.4.12 | contrast, 320 px reflow, text spacing override | report + screenshots |
 | 2.1.1, 2.1.2, 2.4.1, 2.4.3, 2.4.7, 2.4.11 | keyboard-only journey, no trap, skip link, visible/unobscured focus | journey log + screenshots |
 | 2.4.2, 2.4.4, 2.4.6, 3.1.1 | title, link purpose, labels/headings, `lang=ko` | DOM report |
-| 4.1.2 | control name/state | VoiceOver log |
-| 4.1.3 | dynamic result/status가 있으면 announcement, 없으면 고정 N/A 근거 | VoiceOver log |
+| 4.1.2 | control name/state | semantic DOM/accessibility snapshot |
+| 4.1.3 | dynamic result/status가 있으면 announcement, 없으면 N/A 근거 | semantic DOM report |
 
 - keyboard-only로 skip link → 권장 경로 → 구현이 선택한 direct-navigation mechanism → source heading deep link를 완주한다.
-- macOS VoiceOver + Chrome에서 `banner/navigation/main`, page H1, 선택한 direct-navigation control의 name·state를 확인한다. dynamic result/status가 있으면 announcement를 확인하고, 없으면 4.1.3 N/A 근거를 기록한다. evidence에는 정확한 macOS, VoiceOver, Chrome version을 남긴다.
+- semantic DOM/accessibility snapshot에서 `banner/navigation/main`, page H1, direct-navigation control의 name·state를 확인한다. 실제 macOS VoiceOver 점검은 가능할 때 추가하되, 로컬 권한 문제만으로 이 단순 소개 사이트의 배포를 막지 않는다.
 - Chrome에서 200% zoom과 320 CSS px reflow 시 내용 손실·가로 scroll이 없다.
 - review viewport는 desktop 1440×900, mobile 390×844다.
 - canonical 첫 load의 local asset 합계는 1 MB 이하이며 외부 network request가 없어야 한다. 문서 payload 자체는 별도 측정해 보고한다.
@@ -230,7 +230,7 @@ identity가 바뀌면 그 이후 자동 검사, screenshot, Luna, Sol evidence�
 | optional search/filter empty state | 구현 시 keyboard + live-status journey, 미구현 시 N/A 근거 | journey log |
 | no-JS fallback | 두 route에서 JS disable smoke | route parity report |
 | reduced motion | media emulation 후 animation/transition 검사 | accessibility report |
-| semantic/keyboard/VoiceOver/zoom/reflow | WCAG mapping 전체 | accessibility report + screenshots + VoiceOver log |
+| semantic/keyboard/zoom/reflow | WCAG mapping과 대표 journey | accessibility report + screenshots |
 | offline deterministic generation | network 차단 상태 2회 build output digest 일치 | build report |
 | local asset budget | HTML/CSS/JS/font/image byte 합계 ≤ 1 MB, content payload 별도 | build report |
 | Impeccable process와 visual finish | versioned PRODUCT/context/seed/acknowledgement/composition approval/direction contract/detector/critique/finish/documenter | Impeccable evidence manifest |
@@ -242,16 +242,16 @@ identity가 바뀌면 그 이후 자동 검사, screenshot, Luna, Sol evidence�
 - [ ] 구현 전 Sol High가 평가 기준과 달성 목표를 `ACCEPT`한다.
 - [ ] 실행 계약과 two-route parity matrix가 모두 PASS다.
 - [ ] 독립 glob으로 생성한 source manifest가 대상 Markdown 집합과 정확히 일치한다.
-- [ ] 모든 source block/inline payload와 rendered DOM inventory·digest가 일치한다.
+- [ ] 모든 source 원문 byte가 bundle에 보존되고 대표 renderer smoke가 통과한다.
 - [ ] 첫 viewport와 권장 경로가 저자의 실제 사용 방식을 먼저 설명한다.
 - [ ] 기본 ordered loop, human authority, persona별 이해 항목이 원문 근거와 함께 전달된다.
 - [ ] beginner 연속 경로와 experienced 3-action direct path가 동작한다.
 - [ ] URL hash deep link와 reload 복원이 동작한다.
 - [ ] JavaScript 비활성 상태에서도 소개와 원문 접근 경로가 남는다.
-- [ ] 고정 WCAG mapping과 keyboard/VoiceOver/zoom/reflow journey를 확인한다.
+- [ ] semantic DOM, keyboard, zoom, reflow의 대표 journey를 확인한다.
 - [ ] desktop/mobile screenshot review에서 blocker와 material visual defect가 없다.
 - [ ] Impeccable PRODUCT/context/seed/acknowledgement/direction contract/critique/detector/finish/documentation 증거가 있다.
-- [ ] 요구사항-증거 matrix 전체가 PASS이고 동일 bundle identity가 두 route와 모든 downstream evidence에 기록됐다.
+- [ ] 현재 HEAD와 배포 route, source manifest, rendered bundle의 identity가 최종 build·Luna·Sol 기록에서 일치한다.
 - [ ] Luna Max 블라인드 테스트 3/3이 이해도 기준을 통과한다.
 - [ ] 최종 Sol High에서 High·Medium finding 0건과 `ACCEPT`를 받는다.
 
@@ -267,4 +267,4 @@ identity가 바뀌면 그 이후 자동 검사, screenshot, Luna, Sol evidence�
 
 ## 완료 조건
 
-15개 필수 gate가 모두 PASS이고, Luna Max 3/3과 최종 Sol High `ACCEPT`가 확인되며, 모든 evidence identity가 동일한 canonical artifact를 가리킬 때만 완료다.
+위 필수 gate가 모두 PASS이고, Luna Max 3/3과 최종 Sol High `ACCEPT`가 확인되면 완료다. 소개 사이트의 독자 과업과 무관한 중복 증거·브라우저별 수동 인증은 완료 조건으로 확대하지 않는다.

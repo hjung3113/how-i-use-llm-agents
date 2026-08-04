@@ -112,4 +112,4 @@ reviewer의 `ACCEPT`는 현재 문서가 review 계약을 만족한다는 평가
 
 메타프롬프팅 중 오래 유지될 제품 의미를 바꾸는 질문이 발견되면 실행 계약 정제를 멈춘다. 그 선택을 설계 정렬과 명시된 결정권자에게 돌려보내고, 갱신된 권위 문서에서 메타프롬프팅을 다시 이어간다.
 
-설계 문서를 어디까지 나눌지는 [제품 설계 문서 분할](../10-foundations/product-design-docs.md), 실제 설계 결정의 진입·종료 조건은 [자주 사용하는 workflow](workflow-patterns.md#4-설계-결정)에서 이어서 볼 수 있다.
+설계 문서를 어디까지 나눌지는 [제품 설계 문서 분할](../10-foundations/product-design-docs.md), 실제 설계 결정의 진입·종료 조건은 [자주 사용하는 workflow](workflow-patterns.md#4.-설계-결정)에서 이어서 볼 수 있다.
