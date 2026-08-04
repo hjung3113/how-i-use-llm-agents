@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-04T00:50:26.000Z",
+  "title": "Design System: How I Use LLM Agents",
+  "extensions": {
+    "colorMeta": {
+      "paper": { "role": "neutral", "displayName": "Proof Paper", "canonical": "#f7f7f2", "tonalRamp": ["oklch(15% 0.006 100)", "oklch(27% 0.006 100)", "oklch(39% 0.006 100)", "oklch(51% 0.006 100)", "oklch(63% 0.006 100)", "oklch(75% 0.006 100)", "oklch(87% 0.006 100)", "oklch(95% 0.006 100)"] },
+      "paper-deep": { "role": "neutral", "displayName": "Paper Underside", "canonical": "#eceee9", "tonalRamp": ["oklch(15% 0.008 145)", "oklch(27% 0.008 145)", "oklch(39% 0.008 145)", "oklch(51% 0.008 145)", "oklch(63% 0.008 145)", "oklch(75% 0.008 145)", "oklch(87% 0.008 145)", "oklch(95% 0.008 145)"] },
+      "ink": { "role": "neutral", "displayName": "Blue-Black Ink", "canonical": "#152631", "tonalRamp": ["oklch(15% 0.025 235)", "oklch(27% 0.025 235)", "oklch(39% 0.025 235)", "oklch(51% 0.025 235)", "oklch(63% 0.025 235)", "oklch(75% 0.025 235)", "oklch(87% 0.025 235)", "oklch(95% 0.025 235)"] },
+      "muted": { "role": "neutral", "displayName": "Ledger Gray", "canonical": "#52636b", "tonalRamp": ["oklch(15% 0.018 230)", "oklch(27% 0.018 230)", "oklch(39% 0.018 230)", "oklch(51% 0.018 230)", "oklch(63% 0.018 230)", "oklch(75% 0.018 230)", "oklch(87% 0.018 230)", "oklch(95% 0.018 230)"] },
+      "rule": { "role": "neutral", "displayName": "Ledger Rule", "canonical": "#9eb1b5", "tonalRamp": ["oklch(15% 0.015 220)", "oklch(27% 0.015 220)", "oklch(39% 0.015 220)", "oklch(51% 0.015 220)", "oklch(63% 0.015 220)", "oklch(75% 0.015 220)", "oklch(87% 0.015 220)", "oklch(95% 0.015 220)"] },
+      "teal": { "role": "primary", "displayName": "Registration Teal", "canonical": "#177d84", "tonalRamp": ["oklch(15% 0.07 205)", "oklch(27% 0.07 205)", "oklch(39% 0.07 205)", "oklch(51% 0.07 205)", "oklch(63% 0.07 205)", "oklch(75% 0.07 205)", "oklch(87% 0.07 205)", "oklch(95% 0.07 205)"] },
+      "teal-soft": { "role": "neutral", "displayName": "Alignment Wash", "canonical": "rgba(23, 125, 132, 0.1)", "tonalRamp": ["oklch(15% 0.012 205)", "oklch(27% 0.012 205)", "oklch(39% 0.012 205)", "oklch(51% 0.012 205)", "oklch(63% 0.012 205)", "oklch(75% 0.012 205)", "oklch(87% 0.012 205)", "oklch(95% 0.012 205)"] },
+      "proof": { "role": "secondary", "displayName": "Correction Vermilion", "canonical": "#b9332a", "tonalRamp": ["oklch(15% 0.11 30)", "oklch(27% 0.11 30)", "oklch(39% 0.11 30)", "oklch(51% 0.11 30)", "oklch(63% 0.11 30)", "oklch(75% 0.11 30)", "oklch(87% 0.11 30)", "oklch(95% 0.11 30)"] },
+      "focus": { "role": "primary", "displayName": "Focus Teal", "canonical": "#075f66", "tonalRamp": ["oklch(15% 0.065 205)", "oklch(27% 0.065 205)", "oklch(39% 0.065 205)", "oklch(51% 0.065 205)", "oklch(63% 0.065 205)", "oklch(75% 0.065 205)", "oklch(87% 0.065 205)", "oklch(95% 0.065 205)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "SUITE Display", "purpose": "Home and document titles; column headings use the same display character at smaller responsive scales." },
+      "body": { "displayName": "System Reading Text", "purpose": "Long-form Korean documentation and source-derived content." },
+      "label": { "displayName": "Evidence Label", "purpose": "Source paths, counters, and procedural markers only." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ledger-slide", "value": "transform 180ms cubic-bezier(.2,.8,.2,1)", "purpose": "Mobile source-ledger reveal." },
+      { "name": "reduced-motion", "value": "0.001ms", "purpose": "Suppresses animation and transition duration when the user requests reduced motion." }
+    ],
+    "breakpoints": [
+      { "name": "reader-two-column", "value": "980px" },
+      { "name": "mobile-ledger", "value": "680px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Document Menu Button",
+      "kind": "button",
+      "refersTo": "menu-button",
+      "description": "Compact mobile control that opens the source ledger.",
+      "html": "<button class=\"ds-menu-button\" type=\"button\">전체 문서</button>",
+      "css": ".ds-menu-button { padding: 0.35rem 0.65rem; color: #152631; background: transparent; border: 1px solid #152631; border-radius: 0; font: 600 0.86rem/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif; } .ds-menu-button:hover { color: #177d84; border-color: #177d84; } .ds-menu-button:focus-visible { outline: 3px solid #075f66; outline-offset: 3px; }"
+    },
+    {
+      "name": "Reading Path Item",
+      "kind": "nav",
+      "refersTo": "reading-path-item",
+      "description": "The numbered recommended-reading row that carries the central route.",
+      "html": "<a class=\"ds-reading-path\" href=\"#\"><b>1</b><span>처음 이해하기<small>목적, 용어, 전체 지도</small></span></a>",
+      "css": ".ds-reading-path { display: grid; grid-template-columns: 2.2rem 1fr; gap: 0.9rem; align-items: center; min-height: 3.35rem; padding: 0.45rem 0.75rem; color: #152631; background: linear-gradient(90deg, rgba(23, 125, 132, 0.1), transparent 70%); border-top: 1px solid #9eb1b5; border-radius: 0; text-decoration: none; font: 700 1rem/1.3 -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif; } .ds-reading-path b { display: grid; place-items: center; aspect-ratio: 1; color: #fff; background: #152631; font: 700 1rem/1 ui-monospace, monospace; } .ds-reading-path small { display: block; margin-top: 0.25rem; color: #52636b; font-size: 0.78rem; font-weight: 400; } .ds-reading-path:hover { color: #152631; background: rgba(23, 125, 132, 0.1); } .ds-reading-path:focus-visible { outline: 3px solid #075f66; outline-offset: 3px; }"
+    },
+    {
+      "name": "Source Ledger Link",
+      "kind": "nav",
+      "refersTo": "source-ledger-link",
+      "description": "Quiet source navigation row with a clear current or hover state.",
+      "html": "<a class=\"ds-ledger-link\" href=\"#\" aria-current=\"page\">설계 정렬과 grilling</a>",
+      "css": ".ds-ledger-link { display: block; padding: 0.34rem 0.2rem; color: #52636b; background: transparent; border-radius: 0; text-decoration: none; font: 400 0.86rem/1.35 -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif; } .ds-ledger-link:hover, .ds-ledger-link[aria-current='page'] { color: #152631; background: rgba(23, 125, 132, 0.1); } .ds-ledger-link:focus-visible { outline: 3px solid #075f66; outline-offset: 3px; }"
+    },
+    {
+      "name": "Check Sequence Row",
+      "kind": "custom",
+      "refersTo": "check-sequence-row",
+      "description": "Bordered proofing record for an author check and its evidence cue.",
+      "html": "<a class=\"ds-check-row\" href=\"#\"><b>1</b><span><strong>현재 상태</strong><small>추측보다 Git·test·runtime</small></span></a>",
+      "css": ".ds-check-row { display: grid; grid-template-columns: 2rem 1fr; gap: 0.8rem; padding: 0.58rem 0; color: #152631; border-top: 1px solid #9eb1b5; border-radius: 0; text-decoration: none; font: 400 1rem/1.3 -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif; } .ds-check-row b { align-self: start; border: 1px solid #177d84; color: #152631; font: 600 0.82rem/1.55rem ui-monospace, monospace; text-align: center; } .ds-check-row strong { display: block; } .ds-check-row small { display: block; color: #52636b; font-size: 0.78rem; } .ds-check-row:hover { color: #177d84; } .ds-check-row:focus-visible { outline: 3px solid #075f66; outline-offset: 3px; }"
+    },
+    {
+      "name": "Correction Note",
+      "kind": "custom",
+      "refersTo": "proof-note",
+      "description": "Sparse vermilion note for a correction or a retained human decision boundary.",
+      "html": "<p class=\"ds-proof-note\"><b>핵심 교정:</b> reviewer는 사용자의 제품 결정을 대신하지 않습니다.</p>",
+      "css": ".ds-proof-note { position: relative; margin: 2rem 0 1rem; padding-top: 1rem; color: #b9332a; border-top: 1px solid #b9332a; border-radius: 0; font: 400 0.88rem/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif; } .ds-proof-note::before { content: '×'; position: absolute; top: -1.15rem; right: 0; font: 1.6rem/1 ui-monospace, monospace; }"
+    },
+    {
+      "name": "Reader Blockquote",
+      "kind": "custom",
+      "refersTo": "reader-blockquote",
+      "description": "Source-derived callout within the long-form document reader.",
+      "html": "<blockquote class=\"ds-blockquote\">문서의 뜻을 다시 설명하고 사용자가 같은지 확인합니다.</blockquote>",
+      "css": ".ds-blockquote { margin: 1rem 0; padding: 0.8rem 1.2rem; color: #152631; background: rgba(23, 125, 132, 0.1); border-left: 1px solid #177d84; border-radius: 0; font: 400 1rem/1.65 -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Design Proof Room",
+    "overview": "This is a Korean-first editorial reading environment that treats an agent workflow as something to inspect, align, and verify. Off-white paper, blue-black ink, thin ledger rules, and numbered procedural marks make source provenance and human decision boundaries tangible without turning documentation into a product landing page.\n\nThe system is deliberately flat and spare. Teal carries orientation and alignment; vermilion appears only where a correction, warning, or human boundary needs attention. The page earns its visual character through typographic scale, square-edged structure, and the recurring proof-table grammar rather than cards, gradients, or decorative metrics.",
+    "keyCharacteristics": ["Korean-led editorial typography with one heavy display face.", "Proof-paper layering: rules, registration marks, source paths, and numbered steps.", "Dense but calm reading surfaces with one clear primary path.", "Sparse teal for alignment and sparse vermilion for correction."],
+    "rules": [
+      { "name": "The Correction-Only Rule", "body": "Use vermilion only to mark a correction, warning, or retained human decision; do not spend it on ordinary links, fills, or decoration.", "section": "colors" },
+      { "name": "The Ink-First Rule", "body": "Reading hierarchy begins with paper, ink, and rules. Teal supports orientation instead of becoming a second dominant surface color.", "section": "colors" },
+      { "name": "The Evidence Label Rule", "body": "Monospace is for traceable process information, never for paragraph copy or decorative texture.", "section": "typography" },
+      { "name": "The Reading-Path-First Rule", "body": "On mobile, preserve the central recommended sequence as the first content column; do not collapse it into a generic card stack.", "section": "layout" },
+      { "name": "The Flat Proof Rule", "body": "A new surface should use a rule, tonal paper layer, or position change before adding a shadow.", "section": "elevation" }
+    ],
+    "dos": ["Do keep a visible source path, numbered sequence, or ledger rule wherever the interface represents provenance or workflow order.", "Do use the paper/ink hierarchy first, teal for alignment, and vermilion only for correction-level meaning.", "Do preserve the 72ch document reading measure and confine wide code or tables to local horizontal overflow.", "Do retain square edges and one-pixel structural rules on new reader and navigation surfaces."],
+    "donts": ["Don't introduce rounded cards, soft drop shadows, glass effects, or floating dashboard panels.", "Don't use gradient text, glowing blobs, decorative metrics, or generic AI-marketing imagery.", "Don't turn teal or vermilion into large, competing color fields.", "Don't remove the mobile reading-path priority or replace the ledger with an opaque navigation pattern."]
+  }
+}

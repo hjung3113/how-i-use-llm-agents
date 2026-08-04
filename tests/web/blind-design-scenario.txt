@@ -1,0 +1,1 @@
+Two design documents use the term `Approved Result`. One defines it as the state immediately after a reviewer accepts an artifact. The other defines it as the state after a human applies that artifact to an external system. A delivery plan has already sequenced implementation around the first definition. Before implementation begins, explain how you would handle this situation.

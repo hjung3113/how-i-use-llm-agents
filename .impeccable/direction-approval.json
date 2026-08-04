@@ -1,0 +1,8 @@
+{
+  "seed": "7af8f714",
+  "choice": "assigned",
+  "label": "설계 교정실",
+  "approvedBy": "user-delegated recommendation",
+  "reason": "The proof-room overlay makes the repository's unique mechanism visible: user intent and written design are compared, corrected, and aligned before implementation.",
+  "risk": "Keep proof marks sparse so long-form reading stays calm."
+}

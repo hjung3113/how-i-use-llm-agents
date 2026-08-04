@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="저자가 LLM agent를 실제로 사용하는 방식과 그 근거 문서를 연결한 읽기 지도">
+  <title>How I Use LLM Agents</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!--
+  THESIS: 사용자의 생각과 기록된 설계를 교정지처럼 겹쳐 읽는다; 평범한 문서 포털의 hero와 card grid를 거부한다.
+  OWN-WORLD: 백색 proof paper, blue-black ink, teal registration line, 드문 vermilion correction mark, square-edged source ledger.
+  STORY: 저자가 먼저 확인하는 것, 저장소를 읽는 순서, 사람에게 남는 결정을 연결한 뒤 모든 원문으로 이동한다.
+  FIRST VIEWPORT: masthead 아래 25/50/25 proof table; 중앙 reading path가 주 동선이고 아래에서 document reader가 시작된다.
+  FORM: grounded candidate 7, 설계 교정실, seed 7af8f714.
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+  -->
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+
+  <header class="masthead">
+    <a class="wordmark" href="#/home" aria-label="How I Use LLM Agents 홈">How I Use LLM Agents</a>
+    <div class="masthead-actions">
+      <button class="menu-button" type="button" aria-controls="source-ledger" aria-expanded="false">전체 문서</button>
+      <a href="README.md">원본 README</a>
+      <a href="https://github.com/hjung3113/how-i-use-llm-agents">GitHub</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="home" class="home" aria-labelledby="home-title">
+      <h1 id="home-title">생각을 문서로 맞추는 법</h1>
+      <p class="home-intro">이 저장소는 agent 기능 목록이 아니라, 저자가 현재 상태와 권위를 확인하고 좁은 계약으로 일한 뒤 증거와 독립 검토로 결과를 닫는 방식을 설명합니다.</p>
+
+      <div class="proof-table" aria-label="저자의 작업 방식과 읽기 순서, 사람의 결정권을 연결한 지도">
+        <section class="proof-column checks" aria-labelledby="checks-title">
+          <h2 id="checks-title">저자가 먼저 확인하는 것</h2>
+          <ol class="check-sequence">
+            <li><a href="#/docs/00-start-here/mental-model.md/현재-실행-상태"><strong>현재 상태</strong><span>추측보다 Git·test·runtime</span></a></li>
+            <li><a href="#/docs/10-foundations/concepts.md/정보-권위"><strong>권위</strong><span>질문별 최종 판단 근거</span></a></li>
+            <li><a href="#/docs/10-foundations/concepts.md/요청에서-실행까지"><strong>계약</strong><span>목표·범위·금지·완료 조건</span></a></li>
+            <li><a href="#/docs/10-foundations/concepts.md/결과와-검증"><strong>증거</strong><span>주장에 맞는 확인 자료</span></a></li>
+            <li><a href="#/docs/20-workflows/workflow-patterns.md/5.-독립-리뷰와-focused-repair"><strong>독립 검토</strong><span>중요한 위험에만 추가</span></a></li>
+          </ol>
+        </section>
+
+        <nav class="proof-column reading-path" aria-labelledby="path-title">
+          <h2 id="path-title">이 저장소를 읽는 순서</h2>
+          <ol>
+            <li><a href="#/docs/00-start-here/README.md"><span>처음 이해하기</span><small>목적, 용어, 전체 지도</small></a></li>
+            <li><a href="#/docs/10-foundations/README.md"><span>기반 다지기</span><small>authority, contract, evidence</small></a></li>
+            <li><a href="#/docs/20-workflows/README.md"><span>워크플로</span><small>작업 흐름과 단계별 경계</small></a></li>
+            <li><a href="#/docs/30-tooling/README.md"><span>도구와 역할</span><small>목적에 맞는 도구 선택</small></a></li>
+            <li><a href="#/examples/README.md"><span>예시와 템플릿</span><small>실제 문서 형태 확인</small></a></li>
+            <li><a href="#/docs/90-evaluation/README.md"><span>평가 근거</span><small>이해도와 완전성 검증</small></a></li>
+          </ol>
+        </nav>
+
+        <aside class="proof-column decisions" aria-labelledby="decisions-title">
+          <h2 id="decisions-title">사람에게 남는 결정</h2>
+          <ul>
+            <li>제품 목표와 사용자 계약</li>
+            <li>중요한 trade-off와 경계</li>
+            <li>commit·push·merge 같은 외부 효과</li>
+          </ul>
+          <p class="proof-note"><strong>핵심 교정:</strong> reviewer는 문서가 기준을 만족하는지 평가합니다. 사용자의 제품 결정을 대신하지 않습니다.</p>
+          <a class="text-link" href="#/docs/20-workflows/design-alignment.md">설계 정렬과 grilling 읽기</a>
+        </aside>
+      </div>
+
+      <section class="alignment-explainer" aria-labelledby="alignment-title">
+        <div>
+          <h2 id="alignment-title">머릿속 의도를 문서 권위로 옮기는 과정</h2>
+          <p>Grilling은 사람을 공격하는 심문이 아닙니다. 한 번에 하나의 모호함을 질문해 사용자의 암묵적 의도·전제·우선순위를 밖으로 꺼내고, 문서에 반영한 뜻을 사용자가 다시 확인하는 과정입니다.</p>
+        </div>
+        <ol class="alignment-flow">
+          <li><span>사용자의 생각</span><small>의도·전제·우선순위</small></li>
+          <li><span>좁은 질문</span><small>거짓 합의 드러내기</small></li>
+          <li><span>문서 반영</span><small>경계와 trade-off 기록</small></li>
+          <li><span>되짚어 확인</span><small>“A이고 B는 아니다”</small></li>
+          <li><span>독립 검토</span><small>충돌·누락·반례 확인</small></li>
+        </ol>
+        <p class="text-equivalent">텍스트 흐름: 사용자가 생각을 설명하고 결정한다 → 작성자가 좁은 질문으로 빠진 생각을 꺼내 문서에 기록한다 → 작성자가 문서의 뜻을 다시 설명한다 → 사용자가 자신의 생각과 같은지 확인한다 → reviewer가 기록된 문서의 충돌과 누락을 검증한다.</p>
+      </section>
+    </section>
+
+    <section id="reader" class="reader" hidden aria-label="문서 읽기">
+      <nav class="reader-context" aria-label="저자의 작업 지도">
+        <a href="#">작업 지도</a>
+        <span>상태·권위·계약 확인</span><i aria-hidden="true">→</i>
+        <span>권장 순서로 원문 읽기</span><i aria-hidden="true">→</i>
+        <span>중요 결정은 사람에게</span>
+      </nav>
+      <nav id="source-ledger" class="source-ledger" aria-label="전체 문서"></nav>
+      <article id="document" class="document" tabindex="-1"></article>
+      <nav id="local-outline" class="local-outline" aria-label="이 문서의 목차"></nav>
+    </section>
+  </main>
+
+  <noscript>
+    <section class="no-script">
+      <h2>JavaScript 없이 원문 읽기</h2>
+      <p>이 페이지의 안내와 아래 원본 지도는 JavaScript 없이도 사용할 수 있습니다.</p>
+      <ul id="fallback-sources">
+        <!-- SOURCE_MAP_START -->
+        <li><a href="CONTRIBUTING.md">CONTRIBUTING.md</a></li>
+        <li><a href="docs/00-start-here/glossary.md">docs/00-start-here/glossary.md</a></li>
+        <li><a href="docs/00-start-here/mental-model.md">docs/00-start-here/mental-model.md</a></li>
+        <li><a href="docs/00-start-here/quickstart.md">docs/00-start-here/quickstart.md</a></li>
+        <li><a href="docs/00-start-here/README.md">docs/00-start-here/README.md</a></li>
+        <li><a href="docs/00-start-here/team-adoption.md">docs/00-start-here/team-adoption.md</a></li>
+        <li><a href="docs/10-foundations/concepts.md">docs/10-foundations/concepts.md</a></li>
+        <li><a href="docs/10-foundations/docs-structure.md">docs/10-foundations/docs-structure.md</a></li>
+        <li><a href="docs/10-foundations/evidence.md">docs/10-foundations/evidence.md</a></li>
+        <li><a href="docs/10-foundations/instruction-files.md">docs/10-foundations/instruction-files.md</a></li>
+        <li><a href="docs/10-foundations/product-design-docs.md">docs/10-foundations/product-design-docs.md</a></li>
+        <li><a href="docs/10-foundations/README.md">docs/10-foundations/README.md</a></li>
+        <li><a href="docs/20-workflows/design-alignment.md">docs/20-workflows/design-alignment.md</a></li>
+        <li><a href="docs/20-workflows/example-end-to-end.md">docs/20-workflows/example-end-to-end.md</a></li>
+        <li><a href="docs/20-workflows/harness-patterns.md">docs/20-workflows/harness-patterns.md</a></li>
+        <li><a href="docs/20-workflows/meta-prompting.md">docs/20-workflows/meta-prompting.md</a></li>
+        <li><a href="docs/20-workflows/orchestrator-as-operator.md">docs/20-workflows/orchestrator-as-operator.md</a></li>
+        <li><a href="docs/20-workflows/README.md">docs/20-workflows/README.md</a></li>
+        <li><a href="docs/20-workflows/session-derived-patterns.md">docs/20-workflows/session-derived-patterns.md</a></li>
+        <li><a href="docs/20-workflows/workflow-patterns.md">docs/20-workflows/workflow-patterns.md</a></li>
+        <li><a href="docs/30-tooling/claude-code-features.md">docs/30-tooling/claude-code-features.md</a></li>
+        <li><a href="docs/30-tooling/README.md">docs/30-tooling/README.md</a></li>
+        <li><a href="docs/30-tooling/toolbox.md">docs/30-tooling/toolbox.md</a></li>
+        <li><a href="docs/90-evaluation/evaluation-result.md">docs/90-evaluation/evaluation-result.md</a></li>
+        <li><a href="docs/90-evaluation/evaluation-rubric.md">docs/90-evaluation/evaluation-rubric.md</a></li>
+        <li><a href="docs/90-evaluation/README.md">docs/90-evaluation/README.md</a></li>
+        <li><a href="docs/90-evaluation/review-brief.md">docs/90-evaluation/review-brief.md</a></li>
+        <li><a href="docs/90-evaluation/review-criteria.md">docs/90-evaluation/review-criteria.md</a></li>
+        <li><a href="docs/90-evaluation/web-evaluation-rubric.md">docs/90-evaluation/web-evaluation-rubric.md</a></li>
+        <li><a href="docs/README.md">docs/README.md</a></li>
+        <li><a href="examples/project-operating-system/AGENTS.md">examples/project-operating-system/AGENTS.md</a></li>
+        <li><a href="examples/project-operating-system/CLAUDE.md">examples/project-operating-system/CLAUDE.md</a></li>
+        <li><a href="examples/project-operating-system/CONTEXT.md">examples/project-operating-system/CONTEXT.md</a></li>
+        <li><a href="examples/project-operating-system/docs/adr/0000-template.md">examples/project-operating-system/docs/adr/0000-template.md</a></li>
+        <li><a href="examples/project-operating-system/docs/agents/README.md">examples/project-operating-system/docs/agents/README.md</a></li>
+        <li><a href="examples/project-operating-system/docs/architecture/README.md">examples/project-operating-system/docs/architecture/README.md</a></li>
+        <li><a href="examples/project-operating-system/docs/archive/README.md">examples/project-operating-system/docs/archive/README.md</a></li>
+        <li><a href="examples/project-operating-system/docs/operations/README.md">examples/project-operating-system/docs/operations/README.md</a></li>
+        <li><a href="examples/project-operating-system/docs/plans/README.md">examples/project-operating-system/docs/plans/README.md</a></li>
+        <li><a href="examples/project-operating-system/docs/product/README.md">examples/project-operating-system/docs/product/README.md</a></li>
+        <li><a href="examples/project-operating-system/docs/README.md">examples/project-operating-system/docs/README.md</a></li>
+        <li><a href="examples/project-operating-system/docs/research/README.md">examples/project-operating-system/docs/research/README.md</a></li>
+        <li><a href="examples/project-operating-system/docs/reviews/README.md">examples/project-operating-system/docs/reviews/README.md</a></li>
+        <li><a href="examples/project-operating-system/HANDOFF.md">examples/project-operating-system/HANDOFF.md</a></li>
+        <li><a href="examples/project-operating-system/MEMORY.md">examples/project-operating-system/MEMORY.md</a></li>
+        <li><a href="examples/project-operating-system/README.md">examples/project-operating-system/README.md</a></li>
+        <li><a href="examples/README.md">examples/README.md</a></li>
+        <li><a href="README.md">README.md</a></li>
+        <li><a href="templates/agent-contracts.md">templates/agent-contracts.md</a></li>
+        <li><a href="templates/orchestrator-contract.md">templates/orchestrator-contract.md</a></li>
+        <li><a href="templates/README.md">templates/README.md</a></li>
+        <!-- SOURCE_MAP_END -->
+      </ul>
+    </section>
+  </noscript>
+
+  <script src="site-content.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

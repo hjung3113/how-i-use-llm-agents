@@ -1,0 +1,17 @@
+{
+  "id": "445d384e-42e3-457f-af48-4002d10a2df5",
+  "ok": false,
+  "error": {
+    "code": "permission_denied",
+    "message": "app 'Google Chrome' has visible windows but no accessibility window. The app has visible windows, so macOS Accessibility may need Orca Computer Use toggled off and on again in System Settings.",
+    "data": {
+      "nextSteps": [
+        "Run `orca computer permissions --json`, or `orca computer permissions --id accessibility --json` / `--id screenshots --json` when the message names one missing permission.",
+        "For remote or SSH targets, verify the command is running inside an active graphical desktop session."
+      ]
+    }
+  },
+  "_meta": {
+    "runtimeId": "18f5a60a-3463-4dff-a0b5-c0f141f3da0a"
+  }
+}

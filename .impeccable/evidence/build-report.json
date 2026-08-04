@@ -1,0 +1,365 @@
+{
+  "corpusCount": 51,
+  "sourceManifestDigest": "01cdb02f6c54b37032394faf67638f3b64250b2a6d7e398f8262259b3ec4e649",
+  "renderedBundleDigest": "fd3262e51cf212560cc6b4cd26b29e1e0263fda5794d39c2217c615f94e75882",
+  "shellAssetBytes": 165953,
+  "navigation": [
+    {
+      "path": "CONTRIBUTING.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "docs/00-start-here/glossary.md",
+      "directActions": 1,
+      "headingTargets": 52,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 51
+    },
+    {
+      "path": "docs/00-start-here/mental-model.md",
+      "directActions": 1,
+      "headingTargets": 10,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 9
+    },
+    {
+      "path": "docs/00-start-here/quickstart.md",
+      "directActions": 1,
+      "headingTargets": 7,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 6
+    },
+    {
+      "path": "docs/00-start-here/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "docs/00-start-here/team-adoption.md",
+      "directActions": 1,
+      "headingTargets": 9,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 8
+    },
+    {
+      "path": "docs/10-foundations/concepts.md",
+      "directActions": 1,
+      "headingTargets": 9,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 8
+    },
+    {
+      "path": "docs/10-foundations/docs-structure.md",
+      "directActions": 1,
+      "headingTargets": 13,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 12
+    },
+    {
+      "path": "docs/10-foundations/evidence.md",
+      "directActions": 1,
+      "headingTargets": 8,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 7
+    },
+    {
+      "path": "docs/10-foundations/instruction-files.md",
+      "directActions": 1,
+      "headingTargets": 8,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 7
+    },
+    {
+      "path": "docs/10-foundations/product-design-docs.md",
+      "directActions": 1,
+      "headingTargets": 12,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 11
+    },
+    {
+      "path": "docs/10-foundations/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "docs/20-workflows/design-alignment.md",
+      "directActions": 1,
+      "headingTargets": 8,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 7
+    },
+    {
+      "path": "docs/20-workflows/example-end-to-end.md",
+      "directActions": 1,
+      "headingTargets": 7,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 6
+    },
+    {
+      "path": "docs/20-workflows/harness-patterns.md",
+      "directActions": 1,
+      "headingTargets": 11,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 10
+    },
+    {
+      "path": "docs/20-workflows/meta-prompting.md",
+      "directActions": 1,
+      "headingTargets": 7,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 6
+    },
+    {
+      "path": "docs/20-workflows/orchestrator-as-operator.md",
+      "directActions": 1,
+      "headingTargets": 22,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 21
+    },
+    {
+      "path": "docs/20-workflows/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "docs/20-workflows/session-derived-patterns.md",
+      "directActions": 1,
+      "headingTargets": 15,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 14
+    },
+    {
+      "path": "docs/20-workflows/workflow-patterns.md",
+      "directActions": 1,
+      "headingTargets": 10,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 9
+    },
+    {
+      "path": "docs/30-tooling/claude-code-features.md",
+      "directActions": 1,
+      "headingTargets": 9,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 8
+    },
+    {
+      "path": "docs/30-tooling/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "docs/30-tooling/toolbox.md",
+      "directActions": 1,
+      "headingTargets": 12,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 11
+    },
+    {
+      "path": "docs/90-evaluation/evaluation-result.md",
+      "directActions": 1,
+      "headingTargets": 5,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 4
+    },
+    {
+      "path": "docs/90-evaluation/evaluation-rubric.md",
+      "directActions": 1,
+      "headingTargets": 10,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 9
+    },
+    {
+      "path": "docs/90-evaluation/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "docs/90-evaluation/review-brief.md",
+      "directActions": 1,
+      "headingTargets": 5,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 4
+    },
+    {
+      "path": "docs/90-evaluation/review-criteria.md",
+      "directActions": 1,
+      "headingTargets": 9,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 8
+    },
+    {
+      "path": "docs/90-evaluation/web-evaluation-rubric.md",
+      "directActions": 1,
+      "headingTargets": 19,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 18
+    },
+    {
+      "path": "docs/README.md",
+      "directActions": 1,
+      "headingTargets": 2,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 1
+    },
+    {
+      "path": "examples/project-operating-system/AGENTS.md",
+      "directActions": 1,
+      "headingTargets": 6,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 5
+    },
+    {
+      "path": "examples/project-operating-system/CLAUDE.md",
+      "directActions": 1,
+      "headingTargets": 3,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 2
+    },
+    {
+      "path": "examples/project-operating-system/CONTEXT.md",
+      "directActions": 1,
+      "headingTargets": 8,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 7
+    },
+    {
+      "path": "examples/project-operating-system/docs/adr/0000-template.md",
+      "directActions": 1,
+      "headingTargets": 6,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 5
+    },
+    {
+      "path": "examples/project-operating-system/docs/agents/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "examples/project-operating-system/docs/architecture/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "examples/project-operating-system/docs/archive/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "examples/project-operating-system/docs/operations/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "examples/project-operating-system/docs/plans/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "examples/project-operating-system/docs/product/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "examples/project-operating-system/docs/README.md",
+      "directActions": 1,
+      "headingTargets": 2,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 1
+    },
+    {
+      "path": "examples/project-operating-system/docs/research/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "examples/project-operating-system/docs/reviews/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    },
+    {
+      "path": "examples/project-operating-system/HANDOFF.md",
+      "directActions": 1,
+      "headingTargets": 9,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 8
+    },
+    {
+      "path": "examples/project-operating-system/MEMORY.md",
+      "directActions": 1,
+      "headingTargets": 5,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 4
+    },
+    {
+      "path": "examples/project-operating-system/README.md",
+      "directActions": 1,
+      "headingTargets": 4,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 3
+    },
+    {
+      "path": "examples/README.md",
+      "directActions": 1,
+      "headingTargets": 2,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 1
+    },
+    {
+      "path": "README.md",
+      "directActions": 1,
+      "headingTargets": 15,
+      "localNavigationRequired": true,
+      "localNavigationMapped": 14
+    },
+    {
+      "path": "templates/agent-contracts.md",
+      "directActions": 1,
+      "headingTargets": 5,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 4
+    },
+    {
+      "path": "templates/orchestrator-contract.md",
+      "directActions": 1,
+      "headingTargets": 8,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 7
+    },
+    {
+      "path": "templates/README.md",
+      "directActions": 1,
+      "headingTargets": 1,
+      "localNavigationRequired": false,
+      "localNavigationMapped": 0
+    }
+  ]
+}

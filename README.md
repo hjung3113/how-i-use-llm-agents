@@ -23,6 +23,7 @@
 | 팀 규칙을 만들고 있다 | [팀 도입 가이드](docs/00-start-here/team-adoption.md) | 회사 정책과 개인 workflow의 분리 |
 | 여러 agent를 운영하고 싶다 | [하네스 패턴](docs/20-workflows/harness-patterns.md) | 위험도에 맞는 역할과 gate 선택 |
 | 흩어진 요구사항을 실행 prompt로 정리하고 싶다 | [메타프롬프팅](docs/20-workflows/meta-prompting.md) | 승인된 범위와 완료 조건이 있는 Fresh Run prompt |
+| 설계 문서가 내 머릿속 제품과 같은지 확인하고 싶다 | [설계 리뷰와 grilling](docs/20-workflows/design-alignment.md) | 용어·경계·trade-off의 거짓 합의를 구현 전에 발견 |
 | 제품 설계 문서를 어떻게 나눌지 고민이다 | [제품 설계 문서 분할](docs/10-foundations/product-design-docs.md) | 규모에 맞는 구조와 권위 충돌 방지 규칙 |
 | 낯선 용어가 많다 | [쉬운 용어집](docs/00-start-here/glossary.md) | agent workflow의 공통 언어 |
 
@@ -63,6 +64,8 @@ flowchart LR
 ```
 
 요구사항 자체가 흩어져 있으면 구현 전에 [메타프롬프팅](docs/20-workflows/meta-prompting.md)으로 실행 계약을 정제한다. 제품의 목적·도메인·아키텍처처럼 오래가는 권위는 delivery plan과 분리하고, 규모가 커질 때만 [여러 설계 문서](docs/10-foundations/product-design-docs.md)로 나눈다.
+
+설계 단계에서 반복적으로 리뷰하고 grilling하는 이유는 회의를 늘리기 위해서가 아니다. 내가 머릿속으로 이해한 제품과 agent가 실제로 읽는 문서 사이의 간극을 줄이고, 용어·경계·trade-off의 거짓 합의를 구현 전에 드러내기 위해서다. 중요한 판정은 문서에 반영하고 다시 검토하며, 설계 권위가 같은 시스템을 설명할 때만 구현으로 넘어간다. 자세한 흐름은 [설계 리뷰와 grilling](docs/20-workflows/design-alignment.md)에 있다.
 
 반복하다 보면 매번 같은 설명과 검증을 사람이 다시 해야 한다. 그래서 규칙과 제품 맥락을 파일에 남기고, 중요한 결과는 다른 역할이 검증하게 한다. 작업이 여러 개가 되면 오케스트레이터가 context 전달·task 선택·상태 확인·repair를 맡아 사람이 하던 운영 노동을 줄인다.
 
@@ -149,9 +152,10 @@ project/
 1. [운영 파일의 역할](docs/10-foundations/instruction-files.md)
 2. [자주 사용하는 workflow](docs/20-workflows/workflow-patterns.md)
 3. [메타프롬프팅](docs/20-workflows/meta-prompting.md)
-4. [제품 설계 문서 분할](docs/10-foundations/product-design-docs.md)
-5. [전체 세션에서 발견한 추가 패턴](docs/20-workflows/session-derived-patterns.md)
-6. [End-to-end 예시](docs/20-workflows/example-end-to-end.md)
+4. [설계 리뷰와 grilling](docs/20-workflows/design-alignment.md)
+5. [제품 설계 문서 분할](docs/10-foundations/product-design-docs.md)
+6. [전체 세션에서 발견한 추가 패턴](docs/20-workflows/session-derived-patterns.md)
+7. [End-to-end 예시](docs/20-workflows/example-end-to-end.md)
 
 ### 팀 표준화와 고급 운영
 

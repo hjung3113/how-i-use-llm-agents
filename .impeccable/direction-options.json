@@ -1,0 +1,75 @@
+{
+  "title": "문서 허브의 시각 세계 선택",
+  "question": "설계 교정실을 유지하거나, 비교 방향을 선택하거나, 새 조합을 다시 뽑아주세요.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "설계 교정실",
+      "kicker": "지정 방향",
+      "lineage": "건축 도면 교정지와 출판 proof desk",
+      "thesis": "머릿속 생각과 기록된 설계를 겹쳐 어긋남을 찾고 맞추는 읽기 공간.",
+      "palette": ["#f2f0e9", "#18232b", "#356a73", "#d04a3a"],
+      "materials": ["white proof paper", "translucent tracing overlay", "editorial pencil marks"],
+      "viewport": "왼쪽에는 저자의 핵심 workflow, 오른쪽에는 문서 지도가 놓이고 중앙의 반투명 정렬선이 두 내용을 연결한다.",
+      "risk": "교정 표시가 많아지면 읽기보다 작업 도구처럼 보일 수 있어 본문은 조용하게 유지해야 한다.",
+      "sketch": ".impeccable/sketches/assigned.webp"
+    },
+    {
+      "id": "challenger-zine",
+      "label": "손그림 기술 zine",
+      "kicker": "비교 방향",
+      "lineage": "친구가 어려운 개념을 종이에 그려 설명하는 독립 기술 잡지",
+      "thesis": "낯선 agent 용어를 손그림 화살표와 형광펜으로 편안하게 풀어낸다.",
+      "case": "초보자 식별성은 가장 높지만, 엄격한 권위·증거 경계가 가벼워 보일 위험이 있다.",
+      "palette": ["#f5f0df", "#191919", "#f0d941", "#2b8f8b"],
+      "materials": ["marker line", "highlighter", "folded zine paper"],
+      "viewport": "한 장의 큰 손그림 workflow와 번호가 매겨진 읽기 패널이 첫 경로를 안내한다.",
+      "risk": "mascot과 doodle이 많으면 개인 workflow의 진지함을 약화할 수 있다.",
+      "sketch": ".impeccable/sketches/challenger-zine.webp",
+      "hero": "https://impeccable.style/worlds/cards/hand-drawn-zine-explainer-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/hand-drawn-zine-explainer.webp"
+    },
+    {
+      "id": "challenger-industrial",
+      "label": "산업 라벨 문법",
+      "kicker": "비교 방향",
+      "lineage": "stockroom label, hazard stripe, literal quoted signage",
+      "thesis": "모든 문서·상태·권한을 문자 그대로 라벨링해 경계를 숨기지 않는다.",
+      "case": "authority와 상태는 선명하지만 streetwear의 공격성이 긴 읽기 흐름을 압도할 수 있다.",
+      "palette": ["#f6f6f2", "#111111", "#ef5a24"],
+      "materials": ["stencil label", "black nylon", "safety tag"],
+      "viewport": "큰 인용부호 제목 아래 핵심 loop가 라벨 스트립으로 이어지고 문서 구역은 문자 그대로 이름 붙는다.",
+      "risk": "강한 대문자와 hazard motif가 한국어 장문 가독성을 해칠 수 있다.",
+      "sketch": ".impeccable/sketches/challenger-industrial.webp",
+      "hero": "https://impeccable.style/worlds/cards/textiles-weave-drape-fashion-industrial-quote-grammar-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/textiles-weave-drape-fashion-industrial-quote-grammar.webp"
+    },
+    {
+      "id": "challenger-data",
+      "label": "데이터 판독실",
+      "kicker": "비교 방향",
+      "lineage": "black-and-white barcode field와 trace display",
+      "thesis": "agent workflow를 증거 신호와 판독 가능한 trace의 집합으로 보여준다.",
+      "case": "실무자의 증거 감각은 강하지만 입문자에게 차갑고 추상적으로 보일 수 있다.",
+      "palette": ["#ffffff", "#000000"],
+      "materials": ["hairline bars", "tabular data", "signal trace"],
+      "viewport": "핵심 workflow가 큰 신호선으로 지나가고 문서 묶음은 판독 가능한 열로 정렬된다.",
+      "risk": "순수 흑백 밀도가 개념 설명보다 시스템 감시 화면을 연상시킬 수 있다.",
+      "sketch": ".impeccable/sketches/challenger-data.webp",
+      "hero": "https://impeccable.style/worlds/cards/ikeda-datamatics-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/ikeda-datamatics.webp"
+    }
+  ],
+  "reroll": true,
+  "canon": true,
+  "canonCard": {
+    "label": "정석 문서 사이트",
+    "thesis": "고정 sidebar, 검색, 넓은 본문이라는 익숙한 문서 구조를 높은 완성도로 구현한다.",
+    "palette": ["#ffffff", "#202124", "#1a5fb4"],
+    "materials": ["clean documentation UI", "neutral rules"],
+    "viewport": "왼쪽 전체 목차, 중앙 소개와 권장 경로, 오른쪽 현재 문서 목차가 보인다.",
+    "risk": "사용법은 익숙하지만 저자의 고유한 설계·검증 방식이 기억에 남지 않을 수 있다.",
+    "sketch": ".impeccable/sketches/canon.webp"
+  },
+  "steer": true
+}

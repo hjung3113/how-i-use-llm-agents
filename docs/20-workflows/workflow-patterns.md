@@ -60,8 +60,9 @@ Issue와 설계 권위 확인
 → 모호한 용어와 전제 식별
 → 대안과 trade-off 작성
 → 회의적 독립 검토
-→ ACCEPT/REVISE/REJECT
-→ CONTEXT 또는 ADR 반영
+→ reviewer가 현재 문서를 ACCEPT/REVISE/REJECT로 평가
+→ material choice는 decision authority가 결정
+→ 승인된 선택을 CONTEXT 또는 ADR에 반영
 → 구현 계획은 별도 작성
 ```
 

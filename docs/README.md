@@ -8,6 +8,7 @@
 | 처음 agent에게 안전한 작은 작업 맡기기 | [15분 Quickstart](00-start-here/quickstart.md) |
 | 프로젝트에 규칙·제품 맥락·handoff 배치하기 | [운영 파일](10-foundations/instruction-files.md) |
 | 제품 설계 문서를 나누거나 합치기 | [제품 설계 문서 분할](10-foundations/product-design-docs.md) |
+| 설계 문서가 내 의도와 같은지 깊게 검토하기 | [설계 리뷰와 grilling](20-workflows/design-alignment.md) |
 | 흩어진 생각을 실행 가능한 prompt로 정제하기 | [메타프롬프팅](20-workflows/meta-prompting.md) |
 | 작업 위험에 맞는 단일 agent·review·DAG 고르기 | [하네스 선택](20-workflows/harness-patterns.md) |
 | 완료 주장에 필요한 증거 고르기 | [검증 증거 선택](10-foundations/evidence.md) |
